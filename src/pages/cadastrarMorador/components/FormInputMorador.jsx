@@ -1,46 +1,27 @@
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
-// import Link from "next/link";
 
-export function FormInputVacina() {
+export function FormInputMorador() {
 	return (
 		<form className="flex max-w-xl flex-row justify-between items-center gap-4 mx-auto flex-wrap">
 			<div className="w-[48%]">
 				<div className="mb-2 block">
-					<Label htmlFor="nome" value="Nome da vacina*" />
+					<Label htmlFor="nome" value="Nome do Morador*" />
 				</div>
-				<TextInput
-					id="nome"
-					type="text"
-					placeholder="Pfizer-BioNTech"
-					required
-					shadow
-				/>
+				<TextInput id="nome" type="text" placeholder="" required shadow />
 			</div>
 			<div className="w-[48%]">
 				<div className="mb-2 block">
-					<Label htmlFor="lote" value="Lote*" />
+					<Label htmlFor="cartaoSUS" value="Cartão do SUS*" />
 				</div>
-				<TextInput
-					id="lote"
-					type="text"
-					placeholder="PF1234CV"
-					required
-					shadow
-				/>
+				<TextInput id="cartaoSUS" type="text" placeholder="" required shadow />
 			</div>
 			<div className="w-[48%]">
 				<div className="mb-2 block">
-					<Label htmlFor="fabricante" value="Fabricante*" />
+					<Label htmlFor="cpf" value="CPF*" />
 				</div>
-				<TextInput
-					id="fabricante"
-					type="text"
-					placeholder="Pfizer"
-					required
-					shadow
-				/>
+				<TextInput id="cpf" type="text" placeholder="Pfizer" required shadow />
 			</div>
-			<div className="w-[48%]">
+			{/* <div className="w-[48%]">
 				<div className="mb-2 block">
 					<Label htmlFor="validade" value="Validade*" />
 				</div>
@@ -117,7 +98,7 @@ export function FormInputVacina() {
 				<Label htmlFor="agree" className="flex">
 					Confirmo que as informações descritas acima são verdadeiras.
 				</Label>
-			</div>
+			</div> */}
 			<Button type="submit" className="mx-auto">
 				Cadastrar vacina
 			</Button>

@@ -14,7 +14,9 @@ export default function NavbarGeral() {
 				</span>
 			</Navbar.Brand>
 			<div className="flex md:order-2">
-				<Button>Cadastrar morador</Button>
+				<Button onClick={() => navigate("/cadastrarMorador")}>
+					Cadastrar morador
+				</Button>
 				<Navbar.Toggle />
 			</div>
 			<Navbar.Collapse>

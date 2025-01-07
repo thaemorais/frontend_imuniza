@@ -6,6 +6,8 @@ import Home from "./pages/home/Home";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Sobre from "./pages/sobre/Sobre";
 import CadastrarVacina from "./pages/cadastrarVacina/CadastrarVacina";
+import CadastrarMorador from "./pages/cadastrarMorador/CadastrarMorador";
+import Documentacao from "./pages/documentacao/Documentacao";
 
 function App() {
 	const [email, setEmail] = useState("");
@@ -19,6 +21,8 @@ function App() {
 					<Route path="/home" element={<Home />} />
 					<Route path="/sobre" element={<Sobre />} />
 					<Route path="/cadastrarVacina" element={<CadastrarVacina />} />
+					<Route path="/cadastrarMorador" element={<CadastrarMorador />} />
+					<Route path="/docs" element={<Documentacao />} />
 				</Routes>
 			</BrowserRouter>
 		</UserContext.Provider>

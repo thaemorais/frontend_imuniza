@@ -5,7 +5,7 @@ export default function Sobre() {
 	return (
 		<>
 			<NavbarGeral />
-			<div className="max-w-[1280px] px-8 w-full my-8 mx-auto">
+			<section className="max-w-[1280px] px-8 w-full my-8 mx-auto">
 				<PageTitle title="SOBRE O PROJETO" />
 				<p>
 					O site Imuniza foi elaborado por 5 estudantes do curso de Ciência da
@@ -35,7 +35,7 @@ export default function Sobre() {
 					Lembrando que as vacinas podem ter uma dose ou mais, dependendo do
 					tipo."
 				</p>
-			</div>
+			</section>
 		</>
 	);
 }
