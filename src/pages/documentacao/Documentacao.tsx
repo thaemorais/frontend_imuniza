@@ -1,7 +1,8 @@
+import { JSX } from "react";
 import NavbarGeral from "../../components/NavbarGeral";
 import PageTitle from "../../components/PageTitle";
 
-export default function Documentacao() {
+export default function Documentacao(): JSX.Element {
 	return (
 		<>
 			<NavbarGeral />

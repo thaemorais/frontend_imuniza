@@ -1,8 +1,9 @@
+import { JSX } from "react";
 import NavbarGeral from "../../components/NavbarGeral";
 import PageTitle from "../../components/PageTitle";
 import { FormInputMorador } from "./components/FormInputMorador";
 
-export default function CadastrarVacina() {
+export default function CadastrarVacina(): JSX.Element {
 	return (
 		<>
 			<NavbarGeral />
