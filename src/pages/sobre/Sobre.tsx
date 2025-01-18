@@ -1,10 +1,8 @@
-import NavbarGeral from "../../components/NavbarGeral";
 import PageTitle from "../../components/PageTitle";
 
 export default function Sobre() {
 	return (
 		<>
-			<NavbarGeral />
 			<section className="max-w-[1280px] px-8 w-full my-8 mx-auto">
 				<PageTitle title="SOBRE O PROJETO" />
 				<p>

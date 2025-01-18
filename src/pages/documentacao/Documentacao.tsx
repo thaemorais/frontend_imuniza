@@ -1,11 +1,9 @@
 import { JSX } from "react";
-import NavbarGeral from "../../components/NavbarGeral";
 import PageTitle from "../../components/PageTitle";
 
 export default function Documentacao(): JSX.Element {
 	return (
 		<>
-			<NavbarGeral />
 			<section className="max-w-[1280px] px-8 w-full my-8 mx-auto">
 				<PageTitle title="DOCUMENTAÇÃO" />
 				<div className="w-full text-center">

@@ -1,7 +1,6 @@
 import { Button, Label, TextInput } from "flowbite-react";
-import { JSX, Key, useState } from "react";
+import { JSX, useState } from "react";
 import { useMoradores } from "../../../contexts/MoradoresContext";
-import { useVacinas } from "../../../contexts/VacinasContext";
 
 interface FormData {
 	nome: string;

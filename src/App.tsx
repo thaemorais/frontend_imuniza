@@ -7,18 +7,23 @@ import CadastrarVacina from "./pages/cadastrarVacina/CadastrarVacina";
 import CadastrarMorador from "./pages/cadastrarMorador/CadastrarMorador";
 import Documentacao from "./pages/documentacao/Documentacao";
 import { useAuth } from "./contexts/AuthContext";
+import NavbarLogin from "./components/NavbarLogin";
+import NavbarGeral from "./components/NavbarGeral";
+import Footer from "./components/Footer";
 
 function App() {
 	const { login } = useAuth(); // Obtendo o usuário do contexto de autenticação
 
 	return (
 		<BrowserRouter>
+			{!login ? <NavbarLogin /> : <NavbarGeral />}
+
 			<Routes>
-				{/* Rota de Login, acessível se o usuário não estiver logado */}
 				{!login ? (
-					<Route path="/" element={<Login />} />
+					<>
+						<Route path="/" element={<Login />} />
+					</>
 				) : (
-					// Rotas protegidas, acessíveis apenas se o usuário estiver logado
 					<>
 						<Route path="/" element={<Login />} />
 						<Route path="/home" element={<Home />} />
@@ -29,9 +34,9 @@ function App() {
 					</>
 				)}
 
-				{/* Rota de redirecionamento para login se o usuário não estiver autenticado */}
 				<Route path="*" element={<Navigate to="/" replace />} />
 			</Routes>
+			<Footer />
 		</BrowserRouter>
 	);
 }
