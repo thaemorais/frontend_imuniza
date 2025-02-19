@@ -42,10 +42,24 @@ export function FormInputMorador(): JSX.Element {
 		vacinas: [],
 	});
 
-	// Função para atualizar o valor de um campo no formData
+	// Mascaras (react-input-mask não tava funcionando)
+	const applyMask = (value: string, mask: string) => {
+		let i = 0;
+		return mask.replace(/#/g, () => value[i++] || "");
+	};
+
+	// Função para atualizar o valor de um campo no formData e aplicar as mascaras
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value, type, checked } = e.target;
 
+		let maskedValue = value;
+
+		if (name === "cpf") {
+			maskedValue = applyMask(value.replace(/\D/g, ""), "###.###.###-##");
+		}
+		if (name === "cep") {
+			maskedValue = applyMask(value.replace(/\D/g, ""), "##.###-###");
+		}
 		if (name === "vacinas") {
 			setFormData((prevState) => {
 				const vacinasSelecionadas = checked
@@ -59,7 +73,7 @@ export function FormInputMorador(): JSX.Element {
 		} else {
 			setFormData((prevState) => ({
 				...prevState,
-				[name]: type === "checkbox" ? checked : value,
+				[name]: type === "checkbox" ? checked : maskedValue,
 			}));
 		}
 	};
