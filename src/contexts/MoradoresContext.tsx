@@ -10,11 +10,9 @@ interface Morador {
 	nome: string;
 	cpf: string;
 	sus: string;
-	endereco: string;
-	complemento: string;
 	cep: string;
-	cidade: string;
-	siglaUF: string;
+	numero: string;
+	complemento: string;
 	dataNasc: Date;
 	nomeMae: string;
 	sexo: string;

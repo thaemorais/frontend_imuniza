@@ -47,13 +47,13 @@ export default function NavbarGeral() {
 					className="cursor-pointer"
 					onClick={() => navigate("/cadastrarMorador")}
 				>
-					Cadastrar Morador
+					Moradores
 				</Navbar.Link>
 				<Navbar.Link
 					className="cursor-pointer"
 					onClick={() => navigate("/cadastrarVacina")}
 				>
-					Cadastrar Vacina
+					Vacinas
 				</Navbar.Link>
 			</Navbar.Collapse>
 		</Navbar>

@@ -3,47 +3,79 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 // Define os tipos para o contexto
 interface User {
 	email: string;
+	name: string;
+	role: "admin" | "user";
 }
 
 interface AuthContextData {
 	user: User | null;
 	login: (email: string, password: string) => boolean;
 	logout: () => void;
+	isAuthenticated: boolean;
 }
 
-// Cria o contexto com o tipo apropriado ou `undefined` para evitar uso fora do provider
+// Lista de usuários pré-definidos
+const USERS = [
+	{
+		email: "silvia@prof.com",
+		password: "silvia123",
+		name: "Silvia",
+		role: "user" as const,
+	},
+	{
+		email: "teste@teste.com",
+		password: "teste123",
+		name: "Usuário Teste",
+		role: "admin" as const,
+	},
+];
+
+// Cria o contexto
 const AuthContext = createContext<AuthContextData | undefined>(undefined);
 
-// Define os tipos das props do provider
 interface AuthProviderProps {
-	children: ReactNode; // ReactNode é o tipo para o conteúdo JSX
+	children: ReactNode;
 }
 
-// Provider para envolver a aplicação
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-	const [user, setUser] = useState<User | null>(null); // Estado do usuário autenticado
+	const [user, setUser] = useState<User | null>(() => {
+		// Verifica se há um usuário salvo no localStorage
+		const savedUser = localStorage.getItem("@Auth:user");
+		return savedUser ? JSON.parse(savedUser) : null;
+	});
 
-	// Função de login
+	const isAuthenticated = !!user;
+
 	const login = (email: string, password: string): boolean => {
-		// Validação simples de email e senha
-		if (email === "teste@teste.com" && password === "teste123") {
-			setUser({ email }); // Define o usuário autenticado
-			return true; // Login bem-sucedido
+		// Procura o usuário na lista de usuários pré-definidos
+		const foundUser = USERS.find(
+			(u) => u.email === email && u.password === password
+		);
+
+		if (foundUser) {
+			// Remove a senha antes de salvar o usuário
+			const { password: _, ...userWithoutPassword } = foundUser;
+			setUser(userWithoutPassword);
+			// Salva o usuário no localStorage
+			localStorage.setItem("@Auth:user", JSON.stringify(userWithoutPassword));
+			return true;
 		}
-		return false; // Falha no login
+
+		return false;
 	};
 
-	// Função de logout
-	const logout = (): void => setUser(null);
+	const logout = (): void => {
+		setUser(null);
+		localStorage.removeItem("@Auth:user");
+	};
 
 	return (
-		<AuthContext.Provider value={{ user, login, logout }}>
+		<AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
 			{children}
 		</AuthContext.Provider>
 	);
 };
 
-// Hook para usar o contexto
 export const useAuth = (): AuthContextData => {
 	const context = useContext(AuthContext);
 

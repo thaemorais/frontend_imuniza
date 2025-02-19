@@ -6,11 +6,9 @@ interface FormData {
 	nome: string;
 	cpf: string;
 	sus: string;
-	endereco: string;
-	complemento: string;
 	cep: string;
-	cidade: string;
-	siglaUF: string;
+	numero: string;
+	complemento: string;
 	dataNasc: Date;
 	nomeMae: string;
 	sexo: string;
@@ -18,11 +16,11 @@ interface FormData {
 	escolaridade: string;
 	etnia: string;
 	planoSaude: boolean;
-	vacinas: string[]; // vacinas continua sendo um array de strings
+	vacinas: string[];
 }
 
 export function FormInputMorador(): JSX.Element {
-	const { adicionarMorador, moradores } = useMoradores();
+	const { adicionarMorador } = useMoradores();
 	const vacinas = localStorage.getItem("vacinas");
 	console.log(vacinas);
 
@@ -31,11 +29,9 @@ export function FormInputMorador(): JSX.Element {
 		nome: "",
 		cpf: "",
 		sus: "",
-		endereco: "",
-		complemento: "",
 		cep: "",
-		cidade: "",
-		siglaUF: "",
+		numero: "",
+		complemento: "",
 		dataNasc: new Date(),
 		nomeMae: "",
 		sexo: "",
@@ -77,11 +73,9 @@ export function FormInputMorador(): JSX.Element {
 			nome: formData.nome,
 			cpf: formData.cpf,
 			sus: formData.sus,
-			endereco: formData.endereco,
-			complemento: formData.complemento,
 			cep: formData.cep,
-			cidade: formData.cidade,
-			siglaUF: formData.siglaUF,
+			numero: formData.numero,
+			complemento: formData.complemento,
 			dataNasc: formData.dataNasc,
 			nomeMae: formData.nomeMae,
 			sexo: formData.sexo,
@@ -97,11 +91,9 @@ export function FormInputMorador(): JSX.Element {
 			nome: "",
 			cpf: "",
 			sus: "",
-			endereco: "",
-			complemento: "",
 			cep: "",
-			cidade: "",
-			siglaUF: "",
+			numero: "",
+			complemento: "",
 			dataNasc: new Date(0),
 			nomeMae: "",
 			sexo: "",
@@ -136,7 +128,7 @@ export function FormInputMorador(): JSX.Element {
 
 				<div className="w-[48%]">
 					<div className="mb-2 block">
-						<Label htmlFor="cartaoSUS" value="Cartão do SUS*" />
+						<Label htmlFor="cartaoSUS" value="Cartão do SUS" />
 					</div>
 					<TextInput
 						id="cartaoSUS"
@@ -144,7 +136,6 @@ export function FormInputMorador(): JSX.Element {
 						type="text"
 						value={formData.sus}
 						onChange={handleChange}
-						required
 						shadow
 					/>
 				</div>
@@ -165,13 +156,27 @@ export function FormInputMorador(): JSX.Element {
 				</div>
 				<div className="w-[48%]">
 					<div className="mb-2 block">
-						<Label htmlFor="endereco" value="Endereço (Rua, Numero, Bairro)*" />
+						<Label htmlFor="cep" value="Cep*" />
 					</div>
 					<TextInput
-						id="endereco"
-						name="endereco"
+						id="cep"
+						name="cep"
 						type="text"
-						value={formData.endereco}
+						value={formData.cep}
+						onChange={handleChange}
+						required
+						shadow
+					/>
+				</div>
+				<div className="w-[48%]">
+					<div className="mb-2 block">
+						<Label htmlFor="numero" value="Número*" />
+					</div>
+					<TextInput
+						id="numero"
+						name="numero"
+						type="text"
+						value={formData.numero}
 						onChange={handleChange}
 						required
 						shadow
@@ -187,48 +192,6 @@ export function FormInputMorador(): JSX.Element {
 						type="text"
 						value={formData.complemento}
 						onChange={handleChange}
-						shadow
-					/>
-				</div>
-				<div className="w-[48%]">
-					<div className="mb-2 block">
-						<Label htmlFor="cep" value="Cep*" />
-					</div>
-					<TextInput
-						id="cep"
-						name="cep"
-						type="text"
-						value={formData.cep}
-						onChange={handleChange}
-						required
-						shadow
-					/>
-				</div>
-				<div className="w-[48%]">
-					<div className="mb-2 block">
-						<Label htmlFor="cidade" value="Cidade*" />
-					</div>
-					<TextInput
-						id="cidade"
-						name="cidade"
-						type="text"
-						value={formData.cidade}
-						onChange={handleChange}
-						required
-						shadow
-					/>
-				</div>
-				<div className="w-[48%]">
-					<div className="mb-2 block">
-						<Label htmlFor="estado" value="Estado*" />
-					</div>
-					<TextInput
-						id="estado"
-						name="estado"
-						type="text"
-						value={formData.cidade}
-						onChange={handleChange}
-						required
 						shadow
 					/>
 				</div>
@@ -501,30 +464,6 @@ export function FormInputMorador(): JSX.Element {
 					Cadastrar Morador
 				</Button>
 			</form>
-
-			<div className="mt-4">
-				<h3 className="text-xl font-semibold">Moradores Cadastrados</h3>
-				{moradores.length > 0 ? (
-					<ul className="mt-2">
-						{moradores.map((morador, index) => (
-							<li key={index} className="border-b py-2">
-								<p>
-									<strong>Nome:</strong> {morador.nome}
-								</p>
-								<p>
-									<strong>CPF:</strong> {morador.cpf}
-								</p>
-								<p>
-									<strong>Cartão do SUS:</strong> {morador.sus}
-								</p>
-								{/* Exiba outros dados conforme necessário */}
-							</li>
-						))}
-					</ul>
-				) : (
-					<p>Nenhum morador cadastrado ainda.</p>
-				)}
-			</div>
 		</>
 	);
 }

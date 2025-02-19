@@ -12,29 +12,33 @@ import NavbarGeral from "./components/NavbarGeral";
 import Footer from "./components/Footer";
 
 function App() {
-	const { login } = useAuth(); // Obtendo o usuário do contexto de autenticação
+	const { user, isAuthenticated } = useAuth();
 
 	return (
 		<BrowserRouter>
-			{!login ? <NavbarLogin /> : <NavbarGeral />}
+			{!isAuthenticated ? <NavbarLogin /> : <NavbarGeral />}
 
 			<Routes>
-				{!login ? (
+				{!isAuthenticated ? (
+					// Rotas públicas
 					<>
 						<Route path="/" element={<Login />} />
+						<Route path="*" element={<Navigate to="/" replace />} />
 					</>
 				) : (
+					// Rotas protegidas
 					<>
-						<Route path="/" element={<Login />} />
 						<Route path="/home" element={<Home />} />
 						<Route path="/sobre" element={<Sobre />} />
 						<Route path="/cadastrarVacina" element={<CadastrarVacina />} />
 						<Route path="/cadastrarMorador" element={<CadastrarMorador />} />
 						<Route path="/docs" element={<Documentacao />} />
+						{/* Redireciona para home se tentar acessar login quando já autenticado */}
+						<Route path="/" element={<Navigate to="/home" replace />} />
+						{/* Redireciona qualquer rota não encontrada para home */}
+						<Route path="*" element={<Navigate to="/home" replace />} />
 					</>
 				)}
-
-				<Route path="*" element={<Navigate to="/" replace />} />
 			</Routes>
 			<Footer />
 		</BrowserRouter>
