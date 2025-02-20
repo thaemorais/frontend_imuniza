@@ -1,9 +1,35 @@
 import { useEffect, useState } from "react";
 import { useMoradores } from "../../../contexts/MoradoresContext";
 import getEnderecoFromCEP from "./../../utils/getEnderecoFromCEP";
+import { Edit, Trash2 } from "react-feather";
 
-export default function ListaMoradores() {
-	const { moradores } = useMoradores();
+// Tipos
+interface Morador {
+	nome: string;
+	cpf: string;
+	sus: string;
+	cep: string;
+	numero: string;
+	complemento: string;
+	dataNasc: Date;
+	nomeMae: string;
+	sexo: string;
+	estadoCivil: string;
+	escolaridade: string;
+	etnia: string;
+	planoSaude: boolean;
+	vacinas: string[];
+}
+
+export default function ListaMoradores({
+	moradores,
+	onDelete,
+	onEdit,
+}: {
+	moradores: Morador[];
+	onDelete: (cpf: string) => void;
+	onEdit: (morador: Morador) => void;
+}) {
 	const [enderecos, setEnderecos] = useState<{
 		[key: string]: {
 			rua: string;
@@ -14,7 +40,6 @@ export default function ListaMoradores() {
 	}>({});
 
 	useEffect(() => {
-		// Itera sobre os moradores e busca o endereço de cada um
 		moradores.forEach(async (morador) => {
 			if (morador.cep) {
 				const endereco = await getEnderecoFromCEP(morador.cep);
@@ -28,75 +53,122 @@ export default function ListaMoradores() {
 		});
 	}, [moradores]);
 
+	const calcularIdade = (dataNasc: Date) => {
+		const hoje = new Date();
+		const nascimento = new Date(dataNasc);
+		let idade = hoje.getFullYear() - nascimento.getFullYear();
+		const mesAtual = hoje.getMonth();
+		const mesNascimento = nascimento.getMonth();
+
+		if (
+			mesAtual < mesNascimento ||
+			(mesAtual === mesNascimento && hoje.getDate() < nascimento.getDate())
+		) {
+			idade--;
+		}
+
+		return idade;
+	};
+
+	const handleDelete = (cpf: string) => {
+		if (window.confirm("Tem certeza que deseja excluir este morador?")) {
+			onDelete(cpf);
+		}
+	};
+
 	return (
-		<div className="mt-4">
+		<div className="mx-auto max-w-xl my-10">
 			<h3 className="text-xl font-semibold">Moradores Cadastrados</h3>
 			{moradores.length > 0 ? (
-				<ul className="mt-2">
-					{moradores.map((morador, index) => (
-						<li key={index} className="border-b py-2">
-							<p>
-								<strong>Nome:</strong> {morador.nome}
-							</p>
-							<p>
-								<strong>CPF:</strong> {morador.cpf}
-							</p>
-							<p>
-								<strong>Cartão do SUS:</strong> {morador.sus}
-							</p>
-							<p>
-								<strong>Endereço: </strong>
-								{/* Verifica se o endereço está carregado */}
-								{enderecos[morador.cep] ? (
-									<>
-										{enderecos[morador.cep].rua}, {morador.numero},{" "}
-										{enderecos[morador.cep].bairro},{" "}
-										{enderecos[morador.cep].cidade} -{" "}
-										{enderecos[morador.cep].estado} - {morador.cep}
-									</>
-								) : (
-									<span>Carregando...</span>
-								)}
-							</p>
-							<p>
-								<strong>Data de nascimento: </strong>
-								{new Date(morador.dataNasc).toLocaleDateString("pt-BR", {
-									timeZone: "UTC",
-								})}
-							</p>
-							<p>
-								<strong>Idade: </strong> [calcular idade]
-							</p>
-							<p>
-								<strong>Nome da mãe: </strong> {morador.nomeMae}
-							</p>
-							<p>
-								<strong>Sexo: </strong> {morador.sexo}
-							</p>
-							<p>
-								<strong>Estado civil: </strong> {morador.estadoCivil}
-							</p>
-							<p>
-								<strong>Escolaridade: </strong> {morador.escolaridade}
-							</p>
-							<p>
-								<strong>Etnia: </strong> {morador.etnia}
-							</p>
-							<p>
-								<strong>Tem plano de saúde? </strong>{" "}
-								{morador.planoSaude ? "Sim" : "Não"}
-							</p>
-							<p>
-								<strong>Vacinas tomadas: </strong>
-								{morador.vacinas.length > 0
-									? morador.vacinas.join(", ")
-									: "Ainda sem vacinas registradas."}
-							</p>
+				<ul className="mt-2 space-y-4">
+					{moradores.map((morador) => (
+						<li
+							key={morador.cpf}
+							className="border rounded-lg p-4 relative shadow-sm"
+						>
+							<div className="absolute right-4 top-4 flex gap-2">
+								<button
+									onClick={() => onEdit(morador)}
+									className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
+									title="Editar morador"
+								>
+									<Edit size={20} />
+								</button>
+								<button
+									onClick={() => handleDelete(morador.cpf)}
+									className="p-2 text-red-600 hover:bg-red-100 rounded-full transition-colors"
+									title="Excluir morador"
+								>
+									<Trash2 size={20} />
+								</button>
+							</div>
+
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+								<p>
+									<strong>Nome:</strong> {morador.nome}
+								</p>
+								<p>
+									<strong>CPF:</strong> {morador.cpf}
+								</p>
+								<p>
+									<strong>Cartão do SUS:</strong>{" "}
+									{morador.sus ? morador.sus : "N/A"}
+								</p>
+								<p>
+									<strong>Endereço: </strong>
+									{enderecos[morador.cep] ? (
+										<>
+											{enderecos[morador.cep].rua}, {morador.numero}
+											{morador.complemento && `, ${morador.complemento}`},{" "}
+											{enderecos[morador.cep].bairro},{" "}
+											{enderecos[morador.cep].cidade} -{" "}
+											{enderecos[morador.cep].estado} - {morador.cep}
+										</>
+									) : (
+										<span>Endereço não encontrado através do CEP</span>
+									)}
+								</p>
+								<p>
+									<strong>Data de nascimento: </strong>
+									{new Date(morador.dataNasc).toLocaleDateString("pt-BR", {
+										timeZone: "UTC",
+									})}
+								</p>
+								<p>
+									<strong>Idade: </strong> {calcularIdade(morador.dataNasc)}{" "}
+									anos
+								</p>
+								<p>
+									<strong>Nome da mãe: </strong> {morador.nomeMae}
+								</p>
+								<p>
+									<strong>Sexo: </strong> {morador.sexo}
+								</p>
+								<p>
+									<strong>Estado civil: </strong> {morador.estadoCivil}
+								</p>
+								<p>
+									<strong>Escolaridade: </strong> {morador.escolaridade}
+								</p>
+								<p>
+									<strong>Etnia: </strong> {morador.etnia}
+								</p>
+								<p>
+									<strong>Tem plano de saúde? </strong>
+									{morador.planoSaude ? "Sim" : "Não"}
+								</p>
+								<p className="md:col-span-2">
+									<strong>Vacinas tomadas: </strong>
+									{morador.vacinas.length > 0
+										? morador.vacinas.join(", ")
+										: "Ainda sem vacinas registradas."}
+								</p>
+							</div>
 						</li>
 					))}
 				</ul>
 			) : (
-				<p>Nenhum morador cadastrado ainda.</p>
+				<p className="text-gray-500 mt-4">Nenhum morador cadastrado ainda.</p>
 			)}
 		</div>
 	);

@@ -1,46 +1,30 @@
 import { Button, Label, TextInput } from "flowbite-react";
-import { JSX, useState } from "react";
+import { JSX } from "react";
 import { useMoradores } from "../../../contexts/MoradoresContext";
+import { Morador } from "../../../contexts/MoradoresContext";
+import getEnderecoFromCEP from "../../utils/getEnderecoFromCEP";
 
-interface FormData {
-	nome: string;
-	cpf: string;
-	sus: string;
-	cep: string;
-	numero: string;
-	complemento: string;
-	dataNasc: Date;
-	nomeMae: string;
-	sexo: string;
-	estadoCivil: string;
-	escolaridade: string;
-	etnia: string;
-	planoSaude: boolean;
-	vacinas: string[];
+interface FormInputMoradorProps {
+	formData: Morador;
+	setFormData: React.Dispatch<React.SetStateAction<Morador>>;
+	isEditing: boolean;
+	setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+	editingCpf: string | null;
+	setEditingCpf: React.Dispatch<React.SetStateAction<string | null>>;
+	preencherFormularioParaEdicao: (morador: Morador) => void;
 }
 
-export function FormInputMorador(): JSX.Element {
-	const { adicionarMorador } = useMoradores();
+export default function FormInputMorador({
+	formData,
+	setFormData,
+	isEditing,
+	setIsEditing,
+	editingCpf,
+	setEditingCpf,
+}: FormInputMoradorProps): JSX.Element {
+	const { adicionarMorador, editarMorador } = useMoradores();
 	const vacinas = localStorage.getItem("vacinas");
 	console.log(vacinas);
-
-	// Estado único com todos os dados do formulário
-	const [formData, setFormData] = useState<FormData>({
-		nome: "",
-		cpf: "",
-		sus: "",
-		cep: "",
-		numero: "",
-		complemento: "",
-		dataNasc: new Date(),
-		nomeMae: "",
-		sexo: "",
-		estadoCivil: "",
-		escolaridade: "",
-		etnia: "",
-		planoSaude: false,
-		vacinas: [],
-	});
 
 	// Mascaras (react-input-mask não tava funcionando)
 	const applyMask = (value: string, mask: string) => {
@@ -78,29 +62,37 @@ export function FormInputMorador(): JSX.Element {
 		}
 	};
 
+	const validaCEP = async (cep: string): Promise<boolean> => {
+		try {
+			const endereco = await getEnderecoFromCEP(cep);
+			return !!endereco;
+		} catch (error) {
+			console.error("Erro ao validar CEP:", error);
+			return false;
+		}
+	};
+
 	// Função para enviar o formulário
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		// Adiciona o novo morador ao contexto
-		adicionarMorador({
-			nome: formData.nome,
-			cpf: formData.cpf,
-			sus: formData.sus,
-			cep: formData.cep,
-			numero: formData.numero,
-			complemento: formData.complemento,
-			dataNasc: formData.dataNasc,
-			nomeMae: formData.nomeMae,
-			sexo: formData.sexo,
-			estadoCivil: formData.estadoCivil,
-			escolaridade: formData.escolaridade,
-			etnia: formData.etnia,
-			planoSaude: formData.planoSaude,
-			vacinas: formData.vacinas,
-		});
+		// Valida o CEP
+		const cepValido = await validaCEP(formData.cep);
+		if (!cepValido) {
+			alert("CEP inválido. Por favor, insira um CEP válido.");
+			return; // Interrompe a execução se o CEP for inválido
+		}
 
-		// Limpa os campos do formulário após o envio
+		// Adiciona ou edita o morador
+		if (isEditing && editingCpf) {
+			editarMorador(editingCpf, formData);
+			setIsEditing(false);
+			setEditingCpf(null);
+		} else {
+			adicionarMorador(formData);
+		}
+
+		// Limpa o formulário após o envio
 		setFormData({
 			nome: "",
 			cpf: "",
@@ -140,7 +132,7 @@ export function FormInputMorador(): JSX.Element {
 					/>
 				</div>
 
-				<div className="w-[48%]">
+				<div className="w-[47%]">
 					<div className="mb-2 block">
 						<Label htmlFor="cartaoSUS" value="Cartão do SUS" />
 					</div>
@@ -154,7 +146,7 @@ export function FormInputMorador(): JSX.Element {
 					/>
 				</div>
 
-				<div className="w-[48%]">
+				<div className="w-[47%]">
 					<div className="mb-2 block">
 						<Label htmlFor="cpf" value="CPF*" />
 					</div>
@@ -168,7 +160,7 @@ export function FormInputMorador(): JSX.Element {
 						shadow
 					/>
 				</div>
-				<div className="w-[48%]">
+				<div className="w-[47%]">
 					<div className="mb-2 block">
 						<Label htmlFor="cep" value="Cep*" />
 					</div>
@@ -182,7 +174,7 @@ export function FormInputMorador(): JSX.Element {
 						shadow
 					/>
 				</div>
-				<div className="w-[48%]">
+				<div className="w-[47%]">
 					<div className="mb-2 block">
 						<Label htmlFor="numero" value="Número*" />
 					</div>
@@ -196,7 +188,7 @@ export function FormInputMorador(): JSX.Element {
 						shadow
 					/>
 				</div>
-				<div className="w-[48%]">
+				<div className="w-[47%]">
 					<div className="mb-2 block">
 						<Label htmlFor="complemento" value="Complemento" />
 					</div>
@@ -209,7 +201,7 @@ export function FormInputMorador(): JSX.Element {
 						shadow
 					/>
 				</div>
-				<div className="w-[48%]">
+				<div className="w-[47%]">
 					<div className="mb-2 block">
 						<Label htmlFor="dataNasc" value="Data de Nascimento*" />
 					</div>
@@ -222,7 +214,7 @@ export function FormInputMorador(): JSX.Element {
 						shadow
 					/>
 				</div>
-				<div className="w-[48%]">
+				<div className="w-[47%]">
 					<div className="mb-2 block">
 						<Label htmlFor="nomeMae" value="Nome da Mãe*" />
 					</div>
@@ -236,7 +228,21 @@ export function FormInputMorador(): JSX.Element {
 						shadow
 					/>
 				</div>
-				<div className="w-[48%]">
+				<div className="w-[47%]">
+					<div className="mb-2 block">
+						<Label htmlFor="estadoCivil" value="Estado Civil*" />
+					</div>
+					<TextInput
+						id="estadoCivil"
+						name="estadoCivil"
+						type="text"
+						value={formData.estadoCivil}
+						onChange={handleChange}
+						required
+						shadow
+					/>
+				</div>
+				<div className="w-[47%]">
 					<div className="mb-2 block">
 						<Label htmlFor="sexo" value="Sexo*" />
 					</div>
@@ -295,25 +301,11 @@ export function FormInputMorador(): JSX.Element {
 						</div>
 					</div>
 				</div>
-				<div className="w-[48%]">
-					<div className="mb-2 block">
-						<Label htmlFor="estadoCivil" value="Estado Civil*" />
-					</div>
-					<TextInput
-						id="estadoCivil"
-						name="estadoCivil"
-						type="text"
-						value={formData.estadoCivil}
-						onChange={handleChange}
-						required
-						shadow
-					/>
-				</div>
-				<div className="w-[48%]">
+				<div className="w-[47%]">
 					<div className="mb-2 block">
 						<Label htmlFor="escolaridade" value="Escolaridade*" />
 					</div>
-					<div className="flex gap-4">
+					<div className="flex gap-4 flex-wrap">
 						<div className="flex items-center">
 							<input
 								type="radio"
@@ -352,7 +344,7 @@ export function FormInputMorador(): JSX.Element {
 						</div>
 					</div>
 				</div>
-				<div className="w-[48%]">
+				<div className="w-[47%]">
 					<div className="mb-2 block">
 						<Label htmlFor="etnia" value="Etnia*" />
 					</div>
@@ -419,7 +411,7 @@ export function FormInputMorador(): JSX.Element {
 						</div>
 					</div>
 				</div>
-				<div className="w-[48%]">
+				<div className="w-[47%]">
 					<div className="mb-2 block">
 						<Label htmlFor="planoSaude" value="Tem plano de saúde?" />
 					</div>
@@ -475,8 +467,37 @@ export function FormInputMorador(): JSX.Element {
 				</div>
 
 				<Button type="submit" className="mx-auto">
-					Cadastrar Morador
+					{isEditing ? "Salvar Alterações" : "Cadastrar Morador"}
 				</Button>
+				{isEditing && (
+					<Button
+						type="button"
+						color="failure"
+						className="mx-auto"
+						onClick={() => {
+							setIsEditing(false);
+							setEditingCpf(null);
+							setFormData({
+								nome: "",
+								cpf: "",
+								sus: "",
+								cep: "",
+								numero: "",
+								complemento: "",
+								dataNasc: new Date(0),
+								nomeMae: "",
+								sexo: "",
+								estadoCivil: "",
+								escolaridade: "",
+								etnia: "",
+								planoSaude: false,
+								vacinas: [],
+							});
+						}}
+					>
+						Cancelar Edição
+					</Button>
+				)}
 			</form>
 		</>
 	);

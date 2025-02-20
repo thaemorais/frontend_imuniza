@@ -6,7 +6,7 @@ import {
 	useState,
 } from "react";
 
-interface Morador {
+export interface Morador {
 	nome: string;
 	cpf: string;
 	sus: string;
