@@ -1,87 +1,56 @@
 import { useState } from "react";
-import { Button, Checkbox, Label, TextInput } from "flowbite-react";
+import { Button, Checkbox, Label, TextInput, Select } from "flowbite-react";
 import { useVacinas } from "../../../contexts/VacinasContext";
 
 interface FormData {
 	nome: string;
-	lote: string;
-	fabricante: string;
-	validade: string;
+	cnpjFabricante: string;
 	tipo: string;
 	doses: number;
 	intervalo: string;
 	indicacao: string[];
-	agree: boolean;
 }
 
-export function FormInputVacina() {
-	const { adicionarVacina } = useVacinas();
+export default function FormInputVacina() {
+	const { adicionarVacina, fabricantes } = useVacinas();
 	const [formData, setFormData] = useState<FormData>({
 		nome: "",
-		lote: "",
-		fabricante: "",
-		validade: "",
+		cnpjFabricante: "",
 		tipo: "",
 		doses: 1,
 		intervalo: "",
 		indicacao: [],
-		agree: false,
 	});
 
-	// Atualiza os dados do formulário
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { id, value, type, checked } = e.target;
+	const handleChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+	) => {
+		const { id, value, type } = e.target;
 
-		if (type === "checkbox" && id !== "agree") {
-			// Trata múltiplos checkboxes para "indicação"
+		if (type === "checkbox") {
+			const checkboxEvent = e as React.ChangeEvent<HTMLInputElement>;
 			setFormData((prev) => ({
 				...prev,
-				indicacao: checked
+				indicacao: checkboxEvent.target.checked
 					? [...prev.indicacao, id]
 					: prev.indicacao.filter((ind) => ind !== id),
 			}));
-		} else if (type === "checkbox" && id === "agree") {
-			// Checkbox de confirmação
-			setFormData((prev) => ({ ...prev, [id]: checked }));
 		} else {
 			setFormData((prev) => ({ ...prev, [id]: value }));
 		}
 	};
 
-	// Submete o formulário
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-
-		if (!formData.agree) {
-			alert("Você precisa confirmar que as informações são verdadeiras.");
-			return;
-		}
-
-		// Adiciona a vacina ao contexto
-		adicionarVacina({
-			nome: formData.nome,
-			lote: formData.lote,
-			fabricante: formData.fabricante,
-			validade: formData.validade,
-			tipo: formData.tipo,
-			doses: Number(formData.doses),
-			intervalo: formData.intervalo || undefined,
-			indicacao: formData.indicacao,
-		});
-
-		// Limpa o formulário
+		adicionarVacina(formData);
 		setFormData({
 			nome: "",
-			lote: "",
-			fabricante: "",
-			validade: "",
+			cnpjFabricante: "",
 			tipo: "",
 			doses: 1,
 			intervalo: "",
 			indicacao: [],
-			agree: false,
 		});
-
 		alert("Vacina cadastrada com sucesso!");
 	};
 
@@ -106,52 +75,25 @@ export function FormInputVacina() {
 			</div>
 			<div className="w-[48%]">
 				<div className="mb-2 block">
-					<Label htmlFor="lote" value="Lote*" />
+					<Label htmlFor="cnpjFabricante" value="Fabricante*" />
 				</div>
-				<TextInput
-					id="lote"
-					type="text"
-					placeholder="PF1234CV"
+				<Select
+					id="cnpjFabricante"
 					required
-					shadow
-					value={formData.lote}
+					value={formData.cnpjFabricante}
 					onChange={handleChange}
-				/>
-			</div>
-			<div className="w-[48%]">
-				<div className="mb-2 block">
-					<Label htmlFor="fabricante" value="Fabricante*" />
-				</div>
-				<TextInput
-					id="fabricante"
-					type="text"
-					placeholder="Pfizer"
-					required
-					shadow
-					value={formData.fabricante}
-					onChange={handleChange}
-				/>
-			</div>
-			<div className="w-[48%]">
-				<div className="mb-2 block">
-					<Label htmlFor="validade" value="Validade*" />
-				</div>
-				<TextInput
-					id="validade"
-					type="text"
-					placeholder="01/06/2025"
-					required
-					shadow
-					value={formData.validade}
-					onChange={handleChange}
-				/>
+				>
+					<option value="">Selecione um fabricante</option>
+					{fabricantes.map((fabricante) => (
+						<option key={fabricante.cnpj} value={fabricante.cnpj}>
+							{fabricante.nome}
+						</option>
+					))}
+				</Select>
 			</div>
 			<div className="w-full">
 				<div className="mb-2 block">
-					<Label
-						htmlFor="tipo"
-						value="Tipo de vacina (ex.: viral, bacteriana, mRNA, etc..)*"
-					/>
+					<Label htmlFor="tipo" value="Tipo de vacina*" />
 				</div>
 				<TextInput
 					id="tipo"
@@ -160,6 +102,33 @@ export function FormInputVacina() {
 					required
 					shadow
 					value={formData.tipo}
+					onChange={handleChange}
+				/>
+			</div>
+			<div className="w-[48%]">
+				<div className="mb-2 block">
+					<Label htmlFor="doses" value="Doses necessárias*" />
+				</div>
+				<TextInput
+					id="doses"
+					type="number"
+					placeholder="2"
+					required
+					shadow
+					value={formData.doses}
+					onChange={handleChange}
+				/>
+			</div>
+			<div className="w-[48%]">
+				<div className="mb-2 block">
+					<Label htmlFor="intervalo" value="Intervalo entre as doses" />
+				</div>
+				<TextInput
+					id="intervalo"
+					type="text"
+					placeholder="21 dias"
+					shadow
+					value={formData.intervalo}
 					onChange={handleChange}
 				/>
 			</div>
@@ -192,40 +161,6 @@ export function FormInputVacina() {
 						</div>
 					))}
 				</div>
-			</div>
-			<div className="w-[48%]">
-				<div className="mb-2 block">
-					<Label htmlFor="doses" value="Doses necessárias*" />
-				</div>
-				<TextInput
-					id="doses"
-					type="number"
-					placeholder="2"
-					required
-					shadow
-					value={formData.doses}
-					onChange={handleChange}
-				/>
-			</div>
-			<div className="w-[48%]">
-				<div className="mb-2 block">
-					<Label htmlFor="intervalo" value="Intervalo entre as doses" />
-				</div>
-				<TextInput
-					id="intervalo"
-					type="text"
-					placeholder="21 dias"
-					shadow
-					value={formData.intervalo}
-					onChange={handleChange}
-				/>
-			</div>
-
-			<div className="flex items-center gap-2">
-				<Checkbox id="agree" checked={formData.agree} onChange={handleChange} />
-				<Label htmlFor="agree" className="flex">
-					Confirmo que as informações descritas acima são verdadeiras.
-				</Label>
 			</div>
 			<Button className="mx-auto" type="submit">
 				Cadastrar vacina

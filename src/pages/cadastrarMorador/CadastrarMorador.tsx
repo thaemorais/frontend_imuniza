@@ -33,7 +33,7 @@ export default function CadastrarMorador() {
 
 	return (
 		<section className="px-3">
-			<PageTitle title="Cadastro de Moradores" />
+			<PageTitle title="TUDO SOBRE MORADORES" />
 			<FormInputMorador
 				formData={formData}
 				setFormData={setFormData}

@@ -1,52 +1,72 @@
-import {
-	createContext,
-	useContext,
-	useState,
-	ReactNode,
-	useEffect,
-} from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
-// Define o tipo da vacina
+interface Fabricante {
+	cnpj: string;
+	nome: string;
+	cep: string;
+	numero: string;
+	complemento: string;
+}
+
 interface Vacina {
 	nome: string;
-	lote: string;
-	fabricante: string;
-	validade: string;
+	cnpjFabricante: string;
 	tipo: string;
 	doses: number;
-	intervalo?: string;
+	intervalo: string;
 	indicacao: string[];
 }
 
-// Define o contexto
+interface LoteVacina {
+	vacina: string;
+	lote: string;
+	validade: string;
+}
+
 interface VacinasContextType {
+	fabricantes: Fabricante[];
 	vacinas: Vacina[];
-	adicionarVacina: (novaVacina: Vacina) => void;
+	lotes: LoteVacina[];
+	adicionarFabricante: (fabricante: Fabricante) => void;
+	adicionarVacina: (vacina: Vacina) => void;
+	adicionarLote: (lote: LoteVacina) => void;
 }
 
 const VacinasContext = createContext<VacinasContextType | undefined>(undefined);
 
-// Provider do contexto
 export const VacinasProvider = ({ children }: { children: ReactNode }) => {
+	const [fabricantes, setFabricantes] = useState<Fabricante[]>([]);
 	const [vacinas, setVacinas] = useState<Vacina[]>([]);
+	const [lotes, setLotes] = useState<LoteVacina[]>([]);
 
-	const adicionarVacina = (novaVacina: Vacina) => {
-		setVacinas((prevVacinas) => [...prevVacinas, novaVacina]);
+	const adicionarFabricante = (fabricante: Fabricante) => {
+		setFabricantes((prev) => [...prev, fabricante]);
 	};
 
-	// Salvar os dados no localStorage
-	useEffect(() => {
-		localStorage.setItem("vacinas", JSON.stringify(vacinas));
-	}, [vacinas]);
+	const adicionarVacina = (vacina: Vacina) => {
+		setVacinas((prev) => [...prev, vacina]);
+	};
+
+	const adicionarLote = (lote: LoteVacina) => {
+		setLotes((prev) => [...prev, lote]);
+	};
 
 	return (
-		<VacinasContext.Provider value={{ vacinas, adicionarVacina }}>
+		<VacinasContext.Provider
+			value={{
+				fabricantes,
+				vacinas,
+				lotes,
+				adicionarFabricante,
+				adicionarVacina,
+				adicionarLote,
+			}}
+		>
 			{children}
 		</VacinasContext.Provider>
 	);
 };
 
-// Hook para acessar o contexto
 export const useVacinas = () => {
 	const context = useContext(VacinasContext);
 	if (!context) {

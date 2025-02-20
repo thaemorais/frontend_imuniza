@@ -13,15 +13,7 @@ export default function ListaVacinas() {
 							<p>
 								<strong>Nome:</strong> {vacina.nome}
 							</p>
-							<p>
-								<strong>Lote:</strong> {vacina.lote}
-							</p>
-							<p>
-								<strong>Fabricante:</strong> {vacina.fabricante}
-							</p>
-							<p>
-								<strong>Validade:</strong> {vacina.validade}
-							</p>
+
 							<p>
 								<strong>Tipo:</strong> {vacina.tipo}
 							</p>
