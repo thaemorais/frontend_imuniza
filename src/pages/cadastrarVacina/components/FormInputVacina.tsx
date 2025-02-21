@@ -56,9 +56,10 @@ export default function FormInputVacina() {
 
 	return (
 		<form
-			className="flex max-w-xl flex-row justify-between items-center gap-4 mx-auto flex-wrap"
+			className="flex max-w-xl mb-20 flex-row justify-between items-center gap-4 mx-auto flex-wrap"
 			onSubmit={handleSubmit}
 		>
+			<h1 className="w-full text-base font-bold">Cadastre as vacinas</h1>
 			<div className="w-[48%]">
 				<div className="mb-2 block">
 					<Label htmlFor="nome" value="Nome da vacina*" />

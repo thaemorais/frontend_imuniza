@@ -40,9 +40,10 @@ export default function FormInputFabricantes() {
 
 	return (
 		<form
-			className="flex max-w-xl flex-row justify-between items-center gap-4 mx-auto flex-wrap"
+			className="mt-10 mb-20 flex max-w-xl flex-row justify-between items-center gap-4 mx-auto flex-wrap"
 			onSubmit={handleSubmit}
 		>
+			<h1 className="w-full text-base font-bold">Cadastre os fabricantes</h1>
 			<div className="w-[48%]">
 				<div className="mb-2 block">
 					<Label htmlFor="cnpj" value="CNPJ*" />
@@ -99,7 +100,7 @@ export default function FormInputFabricantes() {
 					onChange={handleChange}
 				/>
 			</div>
-			<div className="w-[48%]">
+			<div className="w-full">
 				<div className="mb-2 block">
 					<Label htmlFor="complemento" value="Complemento" />
 				</div>

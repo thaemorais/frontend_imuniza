@@ -24,7 +24,6 @@ export default function FormInputMorador({
 }: FormInputMoradorProps): JSX.Element {
 	const { adicionarMorador, editarMorador } = useMoradores();
 	const vacinas = localStorage.getItem("vacinas");
-	console.log(vacinas);
 
 	// Mascaras (react-input-mask não tava funcionando)
 	const applyMask = (value: string, mask: string) => {
@@ -90,6 +89,7 @@ export default function FormInputMorador({
 			setEditingCpf(null);
 		} else {
 			adicionarMorador(formData);
+			alert("Morador cadastrado com sucesso!");
 		}
 
 		// Limpa o formulário após o envio
@@ -210,6 +210,7 @@ export default function FormInputMorador({
 						name="dataNasc"
 						type="date"
 						onChange={handleChange}
+						placeholder="DD/MM/AAAA"
 						required
 						shadow
 					/>
