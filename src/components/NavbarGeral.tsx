@@ -21,7 +21,12 @@ export default function NavbarGeral() {
 				<img src={zeGotinha} alt="" className="h-[80px] rounded-md" />
 			</Navbar.Brand>
 			<div className="flex md:order-2">
-				<Button onClick={handleLogout}>Sair</Button>
+				<Button onClick={() => navigate("/aplicacao")}>
+					Registrar Aplicação
+				</Button>
+				<Button className="bg-red-400 ml-3" onClick={handleLogout}>
+					Sair
+				</Button>
 				<Navbar.Toggle />
 			</div>
 			<Navbar.Collapse>

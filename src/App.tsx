@@ -10,6 +10,7 @@ import { useAuth } from "./contexts/AuthContext";
 import NavbarLogin from "./components/NavbarLogin";
 import NavbarGeral from "./components/NavbarGeral";
 import Footer from "./components/Footer";
+import RegistroAplicacao from "./pages/registroAplicacao/RegistroAplicacao";
 
 function App() {
 	const { user, isAuthenticated } = useAuth();
@@ -33,6 +34,7 @@ function App() {
 						<Route path="/cadastrarVacina" element={<CadastrarVacina />} />
 						<Route path="/cadastrarMorador" element={<CadastrarMorador />} />
 						<Route path="/docs" element={<Documentacao />} />
+						<Route path="/aplicacao" element={<RegistroAplicacao />} />
 						{/* Redireciona para home se tentar acessar login quando já autenticado */}
 						<Route path="/" element={<Navigate to="/home" replace />} />
 						{/* Redireciona qualquer rota não encontrada para home */}
