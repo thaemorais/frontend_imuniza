@@ -17,7 +17,7 @@ export default function NavbarGeral() {
 
 	return (
 		<Navbar fluid rounded className="shadow py-0">
-			<Navbar.Brand href="https://flowbite-react.com">
+			<Navbar.Brand href="/">
 				<img src={zeGotinha} alt="" className="h-[80px] rounded-md" />
 			</Navbar.Brand>
 			<div className="flex md:order-2">
@@ -30,12 +30,6 @@ export default function NavbarGeral() {
 				<Navbar.Toggle />
 			</div>
 			<Navbar.Collapse>
-				<Navbar.Link
-					className="cursor-pointer"
-					onClick={() => navigate("/home")}
-				>
-					Home
-				</Navbar.Link>
 				<Navbar.Link
 					className="cursor-pointer"
 					onClick={() => navigate("/sobre")}

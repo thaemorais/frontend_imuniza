@@ -1,6 +1,5 @@
 import "./App.css";
 import Login from "./pages/login/Login";
-import Home from "./pages/home/Home";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom"; // Importando Navigate para redirecionamento
 import Sobre from "./pages/sobre/Sobre";
 import CadastrarVacina from "./pages/cadastrarVacina/CadastrarVacina";
@@ -29,16 +28,15 @@ function App() {
 				) : (
 					// Rotas protegidas
 					<>
-						<Route path="/home" element={<Home />} />
 						<Route path="/sobre" element={<Sobre />} />
 						<Route path="/cadastrarVacina" element={<CadastrarVacina />} />
 						<Route path="/cadastrarMorador" element={<CadastrarMorador />} />
 						<Route path="/docs" element={<Documentacao />} />
 						<Route path="/aplicacao" element={<RegistroAplicacao />} />
 						{/* Redireciona para home se tentar acessar login quando já autenticado */}
-						<Route path="/" element={<Navigate to="/home" replace />} />
+						<Route path="/" element={<Navigate to="/sobre" replace />} />
 						{/* Redireciona qualquer rota não encontrada para home */}
-						<Route path="*" element={<Navigate to="/home" replace />} />
+						<Route path="*" element={<Navigate to="/sobre" replace />} />
 					</>
 				)}
 			</Routes>

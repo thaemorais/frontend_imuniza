@@ -36,12 +36,12 @@ export default function FormInputVacinaLote() {
 
 	return (
 		<form
-			className="flex max-w-xl flex-row justify-between items-center gap-4 mx-auto flex-wrap"
+			className="mt-20 mb-1 flex max-w-xl flex-row justify-between items-center gap-4 mx-auto flex-wrap"
 			onSubmit={handleSubmit}
 		>
-			<h1 className="w-full text-base font-bold">
-				Cadastre um lote específico de vacinas
-			</h1>
+			<h3 className="text-xl font-semibold w-full">
+				Cadastre lotes de vacinas
+			</h3>
 			<div className="w-full">
 				<div className="mb-2 block">
 					<Label htmlFor="vacina" value="Vacina*" />

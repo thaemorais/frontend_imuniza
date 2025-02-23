@@ -86,7 +86,7 @@ export default function ListaMoradores({
 							key={morador.cpf}
 							className="border rounded-lg p-4 relative shadow-sm"
 						>
-							<div className="absolute right-4 top-4 flex gap-2">
+							<div className="absolute right-4 top-[50%] translate-y-[-50%] flex flex-col gap-2">
 								<button
 									onClick={() => onEdit(morador)}
 									className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
