@@ -11,7 +11,11 @@ export default function ListaVacinas({ onEditVacina }: ListaVacinasProps) {
 	const { vacinas, removerVacina, fabricantes } = useVacinas();
 
 	const handleDeleteVacina = (nome: string) => {
-		if (window.confirm("Tem certeza que deseja excluir esta vacina?")) {
+		if (
+			window.confirm(
+				"Tem certeza que deseja excluir esta vacina? Os lotes associados a ela também serão excluídos."
+			)
+		) {
 			removerVacina(nome);
 		}
 	};

@@ -43,7 +43,11 @@ export default function ListaFabricantes({
 	}, [fabricantes]);
 
 	const handleDelete = (cnpj: string) => {
-		if (window.confirm("Tem certeza que deseja excluir este fabricante?")) {
+		if (
+			window.confirm(
+				"Tem certeza que deseja excluir este fabricante? As vacinas associadas a ele também serão excluídas."
+			)
+		) {
 			removerFabricante(cnpj);
 			onDelete(cnpj);
 		}
