@@ -25,6 +25,19 @@ export default function FormInputVacinaLote() {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
+
+		const validadeDate = new Date(
+			formData.validade.split("/").reverse().join("-")
+		);
+		const currentDate = new Date();
+
+		if (validadeDate <= currentDate) {
+			alert(
+				"A vacina está vencida. Por favor, insira uma data de validade posterior à data atual."
+			);
+			return;
+		}
+
 		adicionarLote(formData);
 		setFormData({
 			vacina: "",
@@ -80,8 +93,8 @@ export default function FormInputVacinaLote() {
 				</div>
 				<TextInput
 					id="validade"
-					type="text"
-					placeholder="01/06/2025"
+					type="date"
+					placeholder="DD/MM/AAAA"
 					required
 					shadow
 					value={formData.validade}

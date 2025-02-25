@@ -22,7 +22,7 @@ export default function FormInputMorador({
 	editingCpf,
 	setEditingCpf,
 }: FormInputMoradorProps): JSX.Element {
-	const { adicionarMorador, editarMorador } = useMoradores();
+	const { adicionarMorador, editarMorador, moradores } = useMoradores();
 	const vacinas = localStorage.getItem("vacinas");
 
 	// Mascaras (react-input-mask não tava funcionando)
@@ -80,6 +80,15 @@ export default function FormInputMorador({
 		if (!cepValido) {
 			alert("CEP inválido. Por favor, insira um CEP válido.");
 			return; // Interrompe a execução se o CEP for inválido
+		}
+
+		// Verifica se o CPF já está cadastrado
+		const cpfExistente = moradores.some(
+			(morador) => morador.cpf === formData.cpf
+		);
+		if (cpfExistente && !isEditing) {
+			alert("CPF já cadastrado. Por favor, insira um CPF diferente.");
+			return; // Interrompe a execução se o CPF já estiver cadastrado
 		}
 
 		// Adiciona ou edita o morador

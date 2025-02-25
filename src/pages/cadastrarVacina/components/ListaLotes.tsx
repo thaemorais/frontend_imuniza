@@ -41,7 +41,7 @@ export default function ListaLotes({ onEditLote }: ListaVacinasProps) {
 								</button>
 							</div>
 
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+							<div className="max-w-[92%] grid grid-cols-1 md:grid-cols-2 gap-2">
 								<p>
 									<strong>Vacina:</strong> {lote.vacina}
 								</p>
@@ -49,7 +49,10 @@ export default function ListaLotes({ onEditLote }: ListaVacinasProps) {
 									<strong>Número do Lote:</strong> {lote.lote}
 								</p>
 								<p>
-									<strong>Validade:</strong> {lote.validade}
+									<strong>Validade: </strong>
+									{new Date(lote.validade).toLocaleDateString("pt-BR", {
+										timeZone: "UTC",
+									})}
 								</p>
 							</div>
 						</li>

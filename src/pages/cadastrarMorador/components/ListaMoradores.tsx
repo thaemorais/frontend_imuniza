@@ -103,7 +103,7 @@ export default function ListaMoradores({
 								</button>
 							</div>
 
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+							<div className="max-w-[92%] grid grid-cols-1 md:grid-cols-2 gap-2">
 								<p>
 									<strong>Nome:</strong> {morador.nome}
 								</p>
@@ -112,7 +112,7 @@ export default function ListaMoradores({
 								</p>
 								<p>
 									<strong>Cartão do SUS:</strong>{" "}
-									{morador.sus ? morador.sus : "N/A"}
+									{morador.sus ? morador.sus : "Não informado"}
 								</p>
 								<p>
 									<strong>Endereço: </strong>

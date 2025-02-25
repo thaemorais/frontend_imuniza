@@ -2,17 +2,24 @@ import React from "react";
 import { Edit, Trash2 } from "react-feather";
 import { useVacinas } from "../../../contexts/VacinasContext";
 import { Vacina } from "../../../contexts/VacinasContext";
+
 interface ListaVacinasProps {
 	onEditVacina?: (vacina: Vacina) => void;
 }
 
 export default function ListaVacinas({ onEditVacina }: ListaVacinasProps) {
-	const { vacinas, removerVacina } = useVacinas();
+	const { vacinas, removerVacina, fabricantes } = useVacinas();
 
 	const handleDeleteVacina = (nome: string) => {
 		if (window.confirm("Tem certeza que deseja excluir esta vacina?")) {
 			removerVacina(nome);
 		}
+	};
+
+	// Função para obter nome do fabricante pelo CNPJ
+	const getNomeFabricante = (cnpj: string) => {
+		const fabricante = fabricantes.find((fab) => fab.cnpj === cnpj);
+		return fabricante ? fabricante.nome : "Fabricante não encontrado";
 	};
 
 	return (
@@ -42,12 +49,16 @@ export default function ListaVacinas({ onEditVacina }: ListaVacinasProps) {
 								</button>
 							</div>
 
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+							<div className="max-w-[92%] grid grid-cols-1 md:grid-cols-2 gap-2">
 								<p>
 									<strong>Nome:</strong> {vacina.nome}
 								</p>
 								<p>
-									<strong>Fabricante CNPJ:</strong> {vacina.cnpjFabricante}
+									<strong>Fabricante:</strong>{" "}
+									{getNomeFabricante(vacina.cnpjFabricante)}
+									<span className="text-xs text-gray-500 ml-1">
+										({vacina.cnpjFabricante})
+									</span>
 								</p>
 								<p>
 									<strong>Tipo:</strong> {vacina.tipo}
@@ -56,7 +67,8 @@ export default function ListaVacinas({ onEditVacina }: ListaVacinasProps) {
 									<strong>Doses:</strong> {vacina.doses}
 								</p>
 								<p>
-									<strong>Intervalo:</strong> {vacina.intervalo}
+									<strong>Intervalo:</strong>{" "}
+									{vacina.intervalo ? vacina.intervalo : "Não informado"}
 								</p>
 								<p className="md:col-span-2">
 									<strong>Indicações:</strong> {vacina.indicacao.join(", ")}

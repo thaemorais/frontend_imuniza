@@ -1,5 +1,7 @@
 import { Edit, Trash2 } from "react-feather";
 import { Fabricante, useVacinas } from "../../../contexts/VacinasContext";
+import { useEffect, useState } from "react";
+import getEnderecoFromCEP from "../../utils/getEnderecoFromCEP";
 interface ListaVacinasProps {
 	onEditFabricante?: (fabricante: Fabricante) => void;
 }
@@ -8,6 +10,28 @@ export default function ListaFabricantes({
 	onEditFabricante,
 }: ListaVacinasProps) {
 	const { fabricantes, removerFabricante } = useVacinas();
+	const [enderecos, setEnderecos] = useState<{
+		[key: string]: {
+			rua: string;
+			bairro: string;
+			cidade: string;
+			estado: string;
+		};
+	}>({});
+
+	useEffect(() => {
+		fabricantes.forEach(async (fabricante) => {
+			if (fabricante.cep) {
+				const endereco = await getEnderecoFromCEP(fabricante.cep);
+				if (endereco) {
+					setEnderecos((prevEnderecos) => ({
+						...prevEnderecos,
+						[fabricante.cep]: endereco,
+					}));
+				}
+			}
+		});
+	}, [fabricantes]);
 
 	const handleDeleteFabricante = (cnpj: string) => {
 		if (window.confirm("Tem certeza que deseja excluir este fabricante?")) {
@@ -41,7 +65,7 @@ export default function ListaFabricantes({
 								</button>
 							</div>
 
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+							<div className="max-w-[92%] grid grid-cols-1 md:grid-cols-2 gap-2">
 								<p>
 									<strong>Nome:</strong> {fabricante.nome}
 								</p>
@@ -49,16 +73,20 @@ export default function ListaFabricantes({
 									<strong>CNPJ:</strong> {fabricante.cnpj}
 								</p>
 								<p>
-									<strong>CEP:</strong> {fabricante.cep}
+									<strong>Endereço: </strong>
+									{enderecos[fabricante.cep] ? (
+										<>
+											{enderecos[fabricante.cep].rua}, {fabricante.numero}
+											{fabricante.complemento &&
+												`, ${fabricante.complemento}`},{" "}
+											{enderecos[fabricante.cep].bairro},{" "}
+											{enderecos[fabricante.cep].cidade} -{" "}
+											{enderecos[fabricante.cep].estado} - {fabricante.cep}
+										</>
+									) : (
+										<span>Endereço não encontrado através do CEP</span>
+									)}
 								</p>
-								<p>
-									<strong>Número:</strong> {fabricante.numero}
-								</p>
-								{fabricante.complemento && (
-									<p>
-										<strong>Complemento:</strong> {fabricante.complemento}
-									</p>
-								)}
 							</div>
 						</li>
 					))}
