@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Checkbox, Label, TextInput, Select } from "flowbite-react";
 import { useVacinas } from "../../../contexts/VacinasContext";
 
@@ -11,8 +11,16 @@ interface FormData {
 	indicacao: string[];
 }
 
-export default function FormInputVacina() {
-	const { adicionarVacina, fabricantes } = useVacinas();
+interface FormInputVacinaProps {
+	vacinaEmEdicao?: FormData | null;
+	onSave: () => void;
+}
+
+export default function FormInputVacina({
+	vacinaEmEdicao,
+	onSave,
+}: FormInputVacinaProps) {
+	const { adicionarVacina, editarVacina, fabricantes } = useVacinas();
 	const [formData, setFormData] = useState<FormData>({
 		nome: "",
 		cnpjFabricante: "",
@@ -21,6 +29,12 @@ export default function FormInputVacina() {
 		intervalo: "",
 		indicacao: [],
 	});
+
+	useEffect(() => {
+		if (vacinaEmEdicao) {
+			setFormData(vacinaEmEdicao);
+		}
+	}, [vacinaEmEdicao]);
 
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -42,7 +56,15 @@ export default function FormInputVacina() {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		adicionarVacina(formData);
+
+		if (vacinaEmEdicao) {
+			editarVacina(formData);
+		} else {
+			adicionarVacina(formData);
+		}
+
+		alert("Vacina salva com sucesso!");
+		onSave();
 		setFormData({
 			nome: "",
 			cnpjFabricante: "",
@@ -51,7 +73,6 @@ export default function FormInputVacina() {
 			intervalo: "",
 			indicacao: [],
 		});
-		alert("Vacina cadastrada com sucesso!");
 	};
 
 	return (
@@ -59,7 +80,9 @@ export default function FormInputVacina() {
 			className="mt-20 mb-1 flex max-w-xl flex-row justify-between items-center gap-4 mx-auto flex-wrap"
 			onSubmit={handleSubmit}
 		>
-			<h3 className="text-xl font-semibold w-full">Cadastre vacinas</h3>
+			<h3 className="text-xl font-semibold w-full">
+				{vacinaEmEdicao ? "Editar Vacina" : "Cadastre Vacinas"}
+			</h3>
 			<div className="w-[48%]">
 				<div className="mb-2 block">
 					<Label htmlFor="nome" value="Nome da vacina*" />
@@ -164,7 +187,7 @@ export default function FormInputVacina() {
 				</div>
 			</div>
 			<Button className="mx-auto" type="submit">
-				Cadastrar vacina
+				{vacinaEmEdicao ? "Salvar Alterações" : "Cadastrar Vacina"}
 			</Button>
 		</form>
 	);

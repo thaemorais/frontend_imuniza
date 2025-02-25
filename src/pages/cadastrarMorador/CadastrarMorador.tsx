@@ -32,8 +32,8 @@ export default function CadastrarMorador() {
 	};
 
 	return (
-		<section className="px-3">
-			<PageTitle title="TUDO SOBRE MORADORES" />
+		<section className="max-w-[1280px] px-8 w-full my-8 mx-auto">
+			<PageTitle title="Registro de moradores" />
 			<FormInputMorador
 				formData={formData}
 				setFormData={setFormData}

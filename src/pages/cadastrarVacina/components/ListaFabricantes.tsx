@@ -1,14 +1,23 @@
-import { Edit, Trash2 } from "react-feather";
-import { Fabricante, useVacinas } from "../../../contexts/VacinasContext";
 import { useEffect, useState } from "react";
+import { useVacinas } from "../../../contexts/VacinasContext";
 import getEnderecoFromCEP from "../../utils/getEnderecoFromCEP";
-interface ListaVacinasProps {
-	onEditFabricante?: (fabricante: Fabricante) => void;
+import { Edit, Trash2 } from "react-feather";
+
+interface Fabricante {
+	cnpj: string;
+	nome: string;
+	cep: string;
+	numero: string;
+	complemento: string;
 }
 
 export default function ListaFabricantes({
-	onEditFabricante,
-}: ListaVacinasProps) {
+	onEdit,
+	onDelete,
+}: {
+	onEdit: (fabricante: Fabricante) => void;
+	onDelete: (cnpj: string) => void;
+}) {
 	const { fabricantes, removerFabricante } = useVacinas();
 	const [enderecos, setEnderecos] = useState<{
 		[key: string]: {
@@ -33,31 +42,33 @@ export default function ListaFabricantes({
 		});
 	}, [fabricantes]);
 
-	const handleDeleteFabricante = (cnpj: string) => {
+	const handleDelete = (cnpj: string) => {
 		if (window.confirm("Tem certeza que deseja excluir este fabricante?")) {
 			removerFabricante(cnpj);
+			onDelete(cnpj);
 		}
 	};
+
 	return (
-		<div className="my-8">
+		<div className="mx-auto my-10">
 			<h3 className="text-xl font-semibold">Fabricantes Cadastrados</h3>
 			{fabricantes.length > 0 ? (
-				<ul className="mt-2 space-y-4">
+				<ul className="mt-2 flex items-center justify-between flex-wrap gap-4">
 					{fabricantes.map((fabricante) => (
 						<li
 							key={fabricante.cnpj}
-							className="border rounded-lg p-4 relative shadow-sm"
+							className="border rounded-lg p-4 relative shadow-sm w-[48%]"
 						>
 							<div className="absolute right-4 top-[50%] translate-y-[-50%] flex flex-col gap-2">
 								<button
-									onClick={() => onEditFabricante?.(fabricante)}
+									onClick={() => onEdit(fabricante)}
 									className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
 									title="Editar fabricante"
 								>
 									<Edit size={20} />
 								</button>
 								<button
-									onClick={() => handleDeleteFabricante(fabricante.cnpj)}
+									onClick={() => handleDelete(fabricante.cnpj)}
 									className="p-2 text-red-600 hover:bg-red-100 rounded-full transition-colors"
 									title="Excluir fabricante"
 								>
@@ -65,7 +76,7 @@ export default function ListaFabricantes({
 								</button>
 							</div>
 
-							<div className="max-w-[92%] grid grid-cols-1 md:grid-cols-2 gap-2">
+							<div className="max-w-[92%]">
 								<p>
 									<strong>Nome:</strong> {fabricante.nome}
 								</p>
@@ -84,7 +95,7 @@ export default function ListaFabricantes({
 											{enderecos[fabricante.cep].estado} - {fabricante.cep}
 										</>
 									) : (
-										<span>Endereço não encontrado através do CEP</span>
+										<span>Carregando endereço através do CEP...</span>
 									)}
 								</p>
 							</div>

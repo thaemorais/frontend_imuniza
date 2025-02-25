@@ -77,14 +77,14 @@ export default function ListaMoradores({
 	};
 
 	return (
-		<div className="mx-auto max-w-xl my-10">
+		<div className="mx-auto my-10">
 			<h3 className="text-xl font-semibold">Moradores Cadastrados</h3>
 			{moradores.length > 0 ? (
-				<ul className="mt-2 space-y-4">
+				<ul className="mt-2 flex items-center justify-between flex-wrap gap-4">
 					{moradores.map((morador) => (
 						<li
 							key={morador.cpf}
-							className="border rounded-lg p-4 relative shadow-sm"
+							className="border rounded-lg p-4 relative shadow-sm w-[48%]"
 						>
 							<div className="absolute right-4 top-[50%] translate-y-[-50%] flex flex-col gap-2">
 								<button
@@ -103,7 +103,7 @@ export default function ListaMoradores({
 								</button>
 							</div>
 
-							<div className="max-w-[92%] grid grid-cols-1 md:grid-cols-2 gap-2">
+							<div className="max-w-[92%]">
 								<p>
 									<strong>Nome:</strong> {morador.nome}
 								</p>

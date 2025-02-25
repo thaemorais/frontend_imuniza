@@ -1,20 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Label, TextInput, Select } from "flowbite-react";
 import { useVacinas } from "../../../contexts/VacinasContext";
 
 interface FormData {
-	vacina: string;
 	lote: string;
+	vacina: string;
 	validade: string;
 }
 
-export default function FormInputVacinaLote() {
-	const { adicionarLote, vacinas } = useVacinas();
+interface FormInputVacinaLoteProps {
+	loteEmEdicao?: FormData | null;
+	onSave: () => void;
+}
+
+export default function FormInputVacinaLote({
+	loteEmEdicao,
+	onSave,
+}: FormInputVacinaLoteProps) {
+	const { adicionarLote, editarLote, vacinas } = useVacinas();
 	const [formData, setFormData] = useState<FormData>({
-		vacina: "",
 		lote: "",
+		vacina: "",
 		validade: "",
 	});
+
+	useEffect(() => {
+		if (loteEmEdicao) {
+			setFormData(loteEmEdicao);
+		}
+	}, [loteEmEdicao]);
 
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -26,25 +40,19 @@ export default function FormInputVacinaLote() {
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 
-		const validadeDate = new Date(
-			formData.validade.split("/").reverse().join("-")
-		);
-		const currentDate = new Date();
-
-		if (validadeDate <= currentDate) {
-			alert(
-				"A vacina está vencida. Por favor, insira uma data de validade posterior à data atual."
-			);
-			return;
+		if (loteEmEdicao) {
+			editarLote(formData);
+		} else {
+			adicionarLote(formData);
 		}
 
-		adicionarLote(formData);
+		alert("Lote salvo com sucesso!");
+		onSave();
 		setFormData({
-			vacina: "",
 			lote: "",
+			vacina: "",
 			validade: "",
 		});
-		alert("Lote cadastrado com sucesso!");
 	};
 
 	return (
@@ -53,9 +61,23 @@ export default function FormInputVacinaLote() {
 			onSubmit={handleSubmit}
 		>
 			<h3 className="text-xl font-semibold w-full">
-				Cadastre lotes de vacinas
+				{loteEmEdicao ? "Editar Lote" : "Cadastrar Lote"}
 			</h3>
-			<div className="w-full">
+			<div className="w-[48%]">
+				<div className="mb-2 block">
+					<Label htmlFor="lote" value="Número do Lote*" />
+				</div>
+				<TextInput
+					id="lote"
+					type="text"
+					placeholder="123456"
+					required
+					shadow
+					value={formData.lote}
+					onChange={handleChange}
+				/>
+			</div>
+			<div className="w-[48%]">
 				<div className="mb-2 block">
 					<Label htmlFor="vacina" value="Vacina*" />
 				</div>
@@ -73,28 +95,13 @@ export default function FormInputVacinaLote() {
 					))}
 				</Select>
 			</div>
-			<div className="w-[48%]">
+			<div className="w-full">
 				<div className="mb-2 block">
-					<Label htmlFor="lote" value="Lote*" />
-				</div>
-				<TextInput
-					id="lote"
-					type="text"
-					placeholder="PF1234CV"
-					required
-					shadow
-					value={formData.lote}
-					onChange={handleChange}
-				/>
-			</div>
-			<div className="w-[48%]">
-				<div className="mb-2 block">
-					<Label htmlFor="validade" value="Validade*" />
+					<Label htmlFor="validade" value="Data de Validade*" />
 				</div>
 				<TextInput
 					id="validade"
 					type="date"
-					placeholder="DD/MM/AAAA"
 					required
 					shadow
 					value={formData.validade}
@@ -102,7 +109,7 @@ export default function FormInputVacinaLote() {
 				/>
 			</div>
 			<Button className="mx-auto" type="submit">
-				Cadastrar Lote
+				{loteEmEdicao ? "Salvar Alterações" : "Cadastrar Lote"}
 			</Button>
 		</form>
 	);

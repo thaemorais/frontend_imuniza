@@ -1,12 +1,17 @@
 import { Edit, Trash2 } from "react-feather";
 import { LoteVacina, useVacinas } from "../../../contexts/VacinasContext";
 
-interface ListaVacinasProps {
-	onEditLote?: (lote: LoteVacina) => void;
+interface ListaLotesProps {
+	onEditLote: (lote: LoteVacina) => void;
 }
 
-export default function ListaLotes({ onEditLote }: ListaVacinasProps) {
-	const { lotes, removerLote } = useVacinas();
+export default function ListaLotes({ onEditLote }: ListaLotesProps) {
+	const { lotes, removerLote, vacinas } = useVacinas();
+
+	const getNomeVacina = (nome: string) => {
+		const vacina = vacinas.find((vac) => vac.nome === nome);
+		return vacina ? vacina.nome : "Desconhecida";
+	};
 
 	const handleDeleteLote = (lote: string) => {
 		if (window.confirm("Tem certeza que deseja excluir este lote?")) {
@@ -15,18 +20,17 @@ export default function ListaLotes({ onEditLote }: ListaVacinasProps) {
 	};
 
 	return (
-		<div className="my-8">
+		<div className="mx-auto my-10">
 			<h3 className="text-xl font-semibold">Lotes Cadastrados</h3>
 			{lotes.length > 0 ? (
-				<ul className="mt-2 space-y-4">
+				<ul className="mt-2 flex items-center justify-between flex-wrap gap-4">
 					{lotes.map((lote) => (
 						<li
 							key={lote.lote}
-							className="border rounded-lg p-4 relative shadow-sm"
+							className="border rounded-lg p-4 relative shadow-sm w-[48%]"
 						>
 							<div className="absolute right-4 top-[50%] translate-y-[-50%] flex flex-col gap-2">
 								<button
-									onClick={() => onEditLote?.(lote)}
 									className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
 									title="Editar lote"
 								>
@@ -41,18 +45,16 @@ export default function ListaLotes({ onEditLote }: ListaVacinasProps) {
 								</button>
 							</div>
 
-							<div className="max-w-[92%] grid grid-cols-1 md:grid-cols-2 gap-2">
+							<div className="max-w-[92%]">
 								<p>
-									<strong>Vacina:</strong> {lote.vacina}
+									<strong>Lote:</strong> {lote.lote}
 								</p>
 								<p>
-									<strong>Número do Lote:</strong> {lote.lote}
+									<strong>Vacina:</strong> {getNomeVacina(lote.vacina)}
 								</p>
 								<p>
-									<strong>Validade: </strong>
-									{new Date(lote.validade).toLocaleDateString("pt-BR", {
-										timeZone: "UTC",
-									})}
+									<strong>Validade:</strong>{" "}
+									{new Date(lote.validade).toLocaleDateString("pt-BR")}
 								</p>
 							</div>
 						</li>

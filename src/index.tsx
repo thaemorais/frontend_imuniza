@@ -5,6 +5,7 @@ import App from "./App";
 import { AuthProvider } from "./contexts/AuthContext";
 import { VacinasProvider } from "./contexts/VacinasContext";
 import { MoradoresProvider } from "./contexts/MoradoresContext";
+import { AplicacoesProvider } from "./contexts/AplicacoesContext";
 
 const root = ReactDOM.createRoot(
 	document.getElementById("root") as HTMLElement
@@ -13,11 +14,13 @@ const root = ReactDOM.createRoot(
 root.render(
 	<React.StrictMode>
 		<AuthProvider>
-			<VacinasProvider>
-				<MoradoresProvider>
-					<App />
-				</MoradoresProvider>
-			</VacinasProvider>
+			<AplicacoesProvider>
+				<VacinasProvider>
+					<MoradoresProvider>
+						<App />
+					</MoradoresProvider>
+				</VacinasProvider>
+			</AplicacoesProvider>
 		</AuthProvider>
 	</React.StrictMode>
 );

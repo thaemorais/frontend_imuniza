@@ -123,10 +123,10 @@ export default function FormInputMorador({
 	return (
 		<>
 			<form
-				className="flex max-w-xl flex-row justify-between items-center gap-4 mx-auto flex-wrap"
+				className="flex flex-row justify-between items-center gap-4 mx-auto flex-wrap"
 				onSubmit={handleSubmit}
 			>
-				<div className="w-full">
+				<div className="w-[30%]">
 					<div className="mb-2 block">
 						<Label htmlFor="nome" value="Nome do Morador*" />
 					</div>
@@ -141,7 +141,7 @@ export default function FormInputMorador({
 					/>
 				</div>
 
-				<div className="w-[47%]">
+				<div className="w-[30%]">
 					<div className="mb-2 block">
 						<Label htmlFor="cartaoSUS" value="Cartão do SUS" />
 					</div>
@@ -155,7 +155,7 @@ export default function FormInputMorador({
 					/>
 				</div>
 
-				<div className="w-[47%]">
+				<div className="w-[30%]">
 					<div className="mb-2 block">
 						<Label htmlFor="cpf" value="CPF*" />
 					</div>
@@ -169,7 +169,7 @@ export default function FormInputMorador({
 						shadow
 					/>
 				</div>
-				<div className="w-[47%]">
+				<div className="w-[30%]">
 					<div className="mb-2 block">
 						<Label htmlFor="cep" value="Cep*" />
 					</div>
@@ -183,7 +183,7 @@ export default function FormInputMorador({
 						shadow
 					/>
 				</div>
-				<div className="w-[47%]">
+				<div className="w-[30%]">
 					<div className="mb-2 block">
 						<Label htmlFor="numero" value="Número*" />
 					</div>
@@ -197,7 +197,7 @@ export default function FormInputMorador({
 						shadow
 					/>
 				</div>
-				<div className="w-[47%]">
+				<div className="w-[30%]">
 					<div className="mb-2 block">
 						<Label htmlFor="complemento" value="Complemento" />
 					</div>
@@ -210,7 +210,7 @@ export default function FormInputMorador({
 						shadow
 					/>
 				</div>
-				<div className="w-[47%]">
+				<div className="w-[30%]">
 					<div className="mb-2 block">
 						<Label htmlFor="dataNasc" value="Data de Nascimento*" />
 					</div>
@@ -224,7 +224,7 @@ export default function FormInputMorador({
 						shadow
 					/>
 				</div>
-				<div className="w-[47%]">
+				<div className="w-[30%]">
 					<div className="mb-2 block">
 						<Label htmlFor="nomeMae" value="Nome da Mãe*" />
 					</div>
@@ -238,7 +238,7 @@ export default function FormInputMorador({
 						shadow
 					/>
 				</div>
-				<div className="w-[47%]">
+				<div className="w-[30%]">
 					<div className="mb-2 block">
 						<Label htmlFor="estadoCivil" value="Estado Civil*" />
 					</div>
@@ -252,7 +252,7 @@ export default function FormInputMorador({
 						shadow
 					/>
 				</div>
-				<div className="w-[47%]">
+				<div className="w-[30%]">
 					<div className="mb-2 block">
 						<Label htmlFor="sexo" value="Sexo*" />
 					</div>
@@ -311,7 +311,7 @@ export default function FormInputMorador({
 						</div>
 					</div>
 				</div>
-				<div className="w-[47%]">
+				<div className="w-[30%]">
 					<div className="mb-2 block">
 						<Label htmlFor="escolaridade" value="Escolaridade*" />
 					</div>
@@ -354,7 +354,7 @@ export default function FormInputMorador({
 						</div>
 					</div>
 				</div>
-				<div className="w-[47%]">
+				<div className="w-[30%]">
 					<div className="mb-2 block">
 						<Label htmlFor="etnia" value="Etnia*" />
 					</div>
@@ -421,7 +421,7 @@ export default function FormInputMorador({
 						</div>
 					</div>
 				</div>
-				<div className="w-[47%]">
+				<div className="w-full">
 					<div className="mb-2 block">
 						<Label htmlFor="planoSaude" value="Tem plano de saúde?" />
 					</div>
@@ -450,29 +450,6 @@ export default function FormInputMorador({
 							/>
 							<Label htmlFor="nao" value="Não" />
 						</div>
-					</div>
-				</div>
-				<div className="w-full mt-4">
-					<div className="mb-2 block">
-						<Label htmlFor="vacinas" value="Vacinas" />
-					</div>
-					<div className="flex flex-wrap gap-4">
-						{/* {vacinas?.map(
-							(vacina: string[] | null | undefined, key: number | null) => (
-								<div key={vacina.lote}>
-									<input
-										type="checkbox"
-										id={vacina.lote}
-										name="vacinas"
-										value={vacina.nome}
-										checked={formData.vacinas.includes(vacina.nome)}
-										onChange={handleChange}
-										className="mr-2"
-									/>
-									<Label htmlFor={vacina} value={vacina} />
-								</div>
-							)
-						)} */}
 					</div>
 				</div>
 

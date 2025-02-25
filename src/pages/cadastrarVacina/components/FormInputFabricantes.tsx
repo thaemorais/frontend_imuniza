@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Label, TextInput, Spinner } from "flowbite-react";
 import { useVacinas } from "../../../contexts/VacinasContext";
 import getEnderecoFromCEP from "../../utils/getEnderecoFromCEP";
@@ -11,8 +11,16 @@ interface FormData {
 	complemento: string;
 }
 
-export default function FormInputFabricantes() {
-	const { adicionarFabricante } = useVacinas();
+interface FormInputFabricantesProps {
+	fabricanteEmEdicao?: FormData | null;
+	onSave: () => void;
+}
+
+export default function FormInputFabricantes({
+	fabricanteEmEdicao,
+	onSave,
+}: FormInputFabricantesProps) {
+	const { adicionarFabricante, editarFabricante } = useVacinas();
 	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState<FormData>({
 		cnpj: "",
@@ -21,6 +29,12 @@ export default function FormInputFabricantes() {
 		numero: "",
 		complemento: "",
 	});
+
+	useEffect(() => {
+		if (fabricanteEmEdicao) {
+			setFormData(fabricanteEmEdicao);
+		}
+	}, [fabricanteEmEdicao]);
 
 	// Mascaras (react-input-mask não tava funcionando)
 	const applyMask = (value: string, mask: string) => {
@@ -73,18 +87,17 @@ export default function FormInputFabricantes() {
 				return; // Interrompe a execução se o CEP for inválido
 			}
 
-			await adicionarFabricante(formData);
-			setFormData({
-				cnpj: "",
-				nome: "",
-				cep: "",
-				numero: "",
-				complemento: "",
-			});
-			alert("Fabricante cadastrado com sucesso!");
+			if (fabricanteEmEdicao) {
+				editarFabricante(formData);
+			} else {
+				await adicionarFabricante(formData);
+			}
+
+			alert("Fabricante salvo com sucesso!");
+			onSave();
 		} catch (error) {
-			console.error("Erro ao cadastrar fabricante:", error);
-			alert("Erro ao cadastrar fabricante. Tente novamente.");
+			console.error("Erro ao salvar fabricante:", error);
+			alert("Erro ao salvar fabricante. Tente novamente.");
 		} finally {
 			// Desativa estado de loading independente do resultado
 			setIsLoading(false);
@@ -93,11 +106,13 @@ export default function FormInputFabricantes() {
 
 	return (
 		<form
-			className="mt-20 mb-1 flex max-w-xl flex-row justify-between items-center gap-4 mx-auto flex-wrap"
+			className="mt-20 mb-1 grid grid-cols-1 md:grid-cols-3 gap-4 mx-auto"
 			onSubmit={handleSubmit}
 		>
-			<h3 className="text-xl font-semibold w-full">Cadastre fabricantes</h3>
-			<div className="w-[48%]">
+			<h3 className="text-xl font-semibold w-full md:col-span-3">
+				{fabricanteEmEdicao ? "Editar Fabricante" : "Cadastre Fabricantes"}
+			</h3>
+			<div className="w-full">
 				<div className="mb-2 block">
 					<Label htmlFor="cnpj" value="CNPJ*" />
 				</div>
@@ -112,7 +127,7 @@ export default function FormInputFabricantes() {
 					disabled={isLoading}
 				/>
 			</div>
-			<div className="w-[48%]">
+			<div className="w-full">
 				<div className="mb-2 block">
 					<Label htmlFor="nome" value="Nome do Fabricante*" />
 				</div>
@@ -127,7 +142,7 @@ export default function FormInputFabricantes() {
 					disabled={isLoading}
 				/>
 			</div>
-			<div className="w-[48%]">
+			<div className="w-full">
 				<div className="mb-2 block">
 					<Label htmlFor="cep" value="CEP*" />
 				</div>
@@ -142,7 +157,7 @@ export default function FormInputFabricantes() {
 					disabled={isLoading}
 				/>
 			</div>
-			<div className="w-[48%]">
+			<div className="w-full">
 				<div className="mb-2 block">
 					<Label htmlFor="numero" value="Número*" />
 				</div>
@@ -157,7 +172,7 @@ export default function FormInputFabricantes() {
 					disabled={isLoading}
 				/>
 			</div>
-			<div className="w-full">
+			<div className="w-full md:col-span-2">
 				<div className="mb-2 block">
 					<Label htmlFor="complemento" value="Complemento" />
 				</div>
@@ -171,14 +186,18 @@ export default function FormInputFabricantes() {
 					disabled={isLoading}
 				/>
 			</div>
-			<Button className="mx-auto" type="submit" disabled={isLoading}>
+			<Button
+				className="mx-auto md:col-span-3"
+				type="submit"
+				disabled={isLoading}
+			>
 				{isLoading ? (
 					<>
 						<Spinner size="sm" className="mr-2" />
-						Cadastrando...
+						Salvando...
 					</>
 				) : (
-					"Cadastrar Fabricante"
+					"Salvar Fabricante"
 				)}
 			</Button>
 		</form>
