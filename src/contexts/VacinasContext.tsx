@@ -87,8 +87,12 @@ export const VacinasProvider: React.FC<VacinasProviderProps> = ({
 		);
 	};
 
-	const editarLote = (lote: LoteVacina) => {
-		setLotes((prev) => prev.map((l) => (l.lote === lote.lote ? lote : l)));
+	const editarLote = (loteAtualizado: LoteVacina) => {
+		setLotes((prevLotes) =>
+			prevLotes.map((lote) =>
+				lote.lote === loteAtualizado.lote ? loteAtualizado : lote
+			)
+		);
 	};
 
 	return (

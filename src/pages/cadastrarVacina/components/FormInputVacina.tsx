@@ -1,5 +1,12 @@
-import { useState, useEffect } from "react";
-import { Button, Checkbox, Label, TextInput, Select } from "flowbite-react";
+import { useState } from "react";
+import {
+	Button,
+	Checkbox,
+	Label,
+	TextInput,
+	Select,
+	Spinner,
+} from "flowbite-react";
 import { useVacinas } from "../../../contexts/VacinasContext";
 
 interface FormData {
@@ -12,29 +19,25 @@ interface FormData {
 }
 
 interface FormInputVacinaProps {
-	vacinaEmEdicao?: FormData | null;
-	onSave: () => void;
+	formData: FormData;
+	setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+	isEditing: boolean;
+	setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+	editingVacina: string | null;
+	setEditingVacina: React.Dispatch<React.SetStateAction<string | null>>;
+	preencherFormularioParaEdicao: (vacina: FormData) => void;
 }
 
 export default function FormInputVacina({
-	vacinaEmEdicao,
-	onSave,
+	formData,
+	setFormData,
+	isEditing,
+	setIsEditing,
+	editingVacina,
+	setEditingVacina,
 }: FormInputVacinaProps) {
-	const { adicionarVacina, editarVacina, fabricantes } = useVacinas();
-	const [formData, setFormData] = useState<FormData>({
-		nome: "",
-		cnpjFabricante: "",
-		tipo: "",
-		doses: 1,
-		intervalo: "",
-		indicacao: [],
-	});
-
-	useEffect(() => {
-		if (vacinaEmEdicao) {
-			setFormData(vacinaEmEdicao);
-		}
-	}, [vacinaEmEdicao]);
+	const { adicionarVacina, editarVacina, fabricantes, vacinas } = useVacinas();
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -49,41 +52,76 @@ export default function FormInputVacina({
 					? [...prev.indicacao, id]
 					: prev.indicacao.filter((ind) => ind !== id),
 			}));
+		} else if (id === "doses") {
+			const dosesValue = parseInt(value) || 1;
+			setFormData((prev) => ({ ...prev, [id]: dosesValue }));
 		} else {
 			setFormData((prev) => ({ ...prev, [id]: value }));
 		}
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		if (vacinaEmEdicao) {
-			editarVacina(formData);
-		} else {
-			adicionarVacina(formData);
-		}
+		setIsLoading(true);
 
-		alert("Vacina salva com sucesso!");
-		onSave();
-		setFormData({
-			nome: "",
-			cnpjFabricante: "",
-			tipo: "",
-			doses: 1,
-			intervalo: "",
-			indicacao: [],
-		});
+		try {
+			const vacinaExistente = vacinas.some(
+				(vacina) =>
+					vacina.nome === formData.nome &&
+					vacina.cnpjFabricante === formData.cnpjFabricante &&
+					!isEditing
+			);
+
+			if (vacinaExistente) {
+				alert(
+					"Já existe uma vacina com este nome cadastrada para o mesmo fabricante. Por favor, insira um nome diferente ou altere o fabricante."
+				);
+				setIsLoading(false);
+				return;
+			}
+
+			if (formData.indicacao.length === 0) {
+				alert("Selecione pelo menos uma indicação para a vacina.");
+				setIsLoading(false);
+				return;
+			}
+
+			if (isEditing) {
+				editarVacina(formData);
+				setIsEditing(false);
+				setEditingVacina(null);
+				alert("Vacina editada com sucesso!");
+			} else {
+				await adicionarVacina(formData);
+				alert("Vacina cadastrada com sucesso!");
+			}
+
+			setFormData({
+				nome: "",
+				cnpjFabricante: "",
+				tipo: "",
+				doses: 1,
+				intervalo: "",
+				indicacao: [],
+			});
+		} catch (error) {
+			console.error("Erro ao salvar vacina:", error);
+			alert("Erro ao salvar vacina. Tente novamente.");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
 		<form
-			className="mt-20 mb-1 flex max-w-xl flex-row justify-between items-center gap-4 mx-auto flex-wrap"
+			className="mt-20 mb-1 grid grid-cols-1 md:grid-cols-3 gap-4 mx-auto"
 			onSubmit={handleSubmit}
 		>
-			<h3 className="text-xl font-semibold w-full">
-				{vacinaEmEdicao ? "Editar Vacina" : "Cadastre Vacinas"}
+			<h3 className="text-xl font-semibold w-full md:col-span-3">
+				{isEditing ? "Editar Vacina" : "Cadastre Vacinas"}
 			</h3>
-			<div className="w-[48%]">
+			<div className="w-full">
 				<div className="mb-2 block">
 					<Label htmlFor="nome" value="Nome da vacina*" />
 				</div>
@@ -95,9 +133,10 @@ export default function FormInputVacina({
 					shadow
 					value={formData.nome}
 					onChange={handleChange}
+					disabled={isLoading}
 				/>
 			</div>
-			<div className="w-[48%]">
+			<div className="w-full">
 				<div className="mb-2 block">
 					<Label htmlFor="cnpjFabricante" value="Fabricante*" />
 				</div>
@@ -106,6 +145,7 @@ export default function FormInputVacina({
 					required
 					value={formData.cnpjFabricante}
 					onChange={handleChange}
+					disabled={isLoading}
 				>
 					<option value="">Selecione um fabricante</option>
 					{fabricantes.map((fabricante) => (
@@ -127,9 +167,10 @@ export default function FormInputVacina({
 					shadow
 					value={formData.tipo}
 					onChange={handleChange}
+					disabled={isLoading}
 				/>
 			</div>
-			<div className="w-[48%]">
+			<div className="w-full">
 				<div className="mb-2 block">
 					<Label htmlFor="doses" value="Doses necessárias*" />
 				</div>
@@ -141,9 +182,10 @@ export default function FormInputVacina({
 					shadow
 					value={formData.doses}
 					onChange={handleChange}
+					disabled={isLoading}
 				/>
 			</div>
-			<div className="w-[48%]">
+			<div className="w-full">
 				<div className="mb-2 block">
 					<Label htmlFor="intervalo" value="Intervalo entre as doses" />
 				</div>
@@ -154,9 +196,10 @@ export default function FormInputVacina({
 					shadow
 					value={formData.intervalo}
 					onChange={handleChange}
+					disabled={isLoading}
 				/>
 			</div>
-			<div className="w-full">
+			<div className="w-full md:col-span-3">
 				<div className="mb-2 block">
 					<Label htmlFor="indicacao" value="Indicação (público alvo)*" />
 				</div>
@@ -180,15 +223,47 @@ export default function FormInputVacina({
 								id={option.id}
 								checked={formData.indicacao.includes(option.id)}
 								onChange={handleChange}
+								disabled={isLoading}
 							/>
 							<Label htmlFor={option.id} value={option.label} />
 						</div>
 					))}
 				</div>
 			</div>
-			<Button className="mx-auto" type="submit">
-				{vacinaEmEdicao ? "Salvar Alterações" : "Cadastrar Vacina"}
-			</Button>
+			<div className="flex items-center justify-center gap-3 md:col-span-3">
+				<Button type="submit" disabled={isLoading}>
+					{isLoading ? (
+						<>
+							<Spinner size="sm" className="mr-2" />
+							Salvando...
+						</>
+					) : isEditing ? (
+						"Salvar Alterações"
+					) : (
+						"Cadastrar Vacina"
+					)}
+				</Button>
+				{isEditing && (
+					<Button
+						type="button"
+						color="failure"
+						onClick={() => {
+							setIsEditing(false);
+							setEditingVacina(null);
+							setFormData({
+								nome: "",
+								cnpjFabricante: "",
+								tipo: "",
+								doses: 1,
+								intervalo: "",
+								indicacao: [],
+							});
+						}}
+					>
+						Cancelar Edição
+					</Button>
+				)}
+			</div>
 		</form>
 	);
 }

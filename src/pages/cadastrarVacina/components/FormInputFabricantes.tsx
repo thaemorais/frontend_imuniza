@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Button, Label, TextInput, Spinner } from "flowbite-react";
 import { useVacinas } from "../../../contexts/VacinasContext";
 import getEnderecoFromCEP from "../../utils/getEnderecoFromCEP";
+import applyMask from "../../utils/applyMask";
+import validaCEP from "../../utils/validaCEP";
 
 interface FormData {
 	cnpj: string;
@@ -12,35 +14,31 @@ interface FormData {
 }
 
 interface FormInputFabricantesProps {
-	fabricanteEmEdicao?: FormData | null;
-	onSave: () => void;
+	formData: FormData;
+	setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+	isEditing: boolean;
+	setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+	editingCnpj: string | null;
+	setEditingCnpj: React.Dispatch<React.SetStateAction<string | null>>;
+	preencherFormularioParaEdicao: (fabricante: FormData) => void;
 }
 
 export default function FormInputFabricantes({
-	fabricanteEmEdicao,
-	onSave,
+	formData,
+	setFormData,
+	isEditing,
+	setIsEditing,
+	editingCnpj,
+	setEditingCnpj,
 }: FormInputFabricantesProps) {
-	const { adicionarFabricante, editarFabricante } = useVacinas();
+	const { fabricantes, adicionarFabricante, editarFabricante } = useVacinas();
 	const [isLoading, setIsLoading] = useState(false);
-	const [formData, setFormData] = useState<FormData>({
-		cnpj: "",
-		nome: "",
-		cep: "",
-		numero: "",
-		complemento: "",
-	});
 
 	useEffect(() => {
-		if (fabricanteEmEdicao) {
-			setFormData(fabricanteEmEdicao);
+		if (isEditing && editingCnpj) {
+			setFormData((prev) => ({ ...prev, cnpj: editingCnpj }));
 		}
-	}, [fabricanteEmEdicao]);
-
-	// Mascaras (react-input-mask não tava funcionando)
-	const applyMask = (value: string, mask: string) => {
-		let i = 0;
-		return mask.replace(/#/g, () => value[i++] || "");
-	};
+	}, [isEditing, editingCnpj]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { id, value } = e.target;
@@ -54,52 +52,54 @@ export default function FormInputFabricantes({
 			maskedValue = applyMask(value.replace(/\D/g, ""), "##.###-###");
 		}
 
-		// Update formData with the masked value
 		setFormData((prevData) => ({
 			...prevData,
 			[id]: maskedValue,
 		}));
 	};
 
-	const validaCEP = async (cep: string): Promise<boolean> => {
-		try {
-			// Remove non-numeric characters for API call
-			const cepNumerico = cep.replace(/\D/g, "");
-			const endereco = await getEnderecoFromCEP(cepNumerico);
-			return !!endereco;
-		} catch (error) {
-			console.error("Erro ao validar CEP:", error);
-			return false;
-		}
-	};
-
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		// Ativa estado de loading
 		setIsLoading(true);
 
 		try {
-			// Valida o CEP
 			const cepValido = await validaCEP(formData.cep);
 			if (!cepValido) {
 				alert("CEP inválido. Por favor, insira um CEP válido.");
-				return; // Interrompe a execução se o CEP for inválido
+				setIsLoading(false);
+				return;
 			}
 
-			if (fabricanteEmEdicao) {
+			const cnpjExistente = fabricantes.some(
+				(fabricante) => fabricante.cnpj === formData.cnpj
+			);
+			if (cnpjExistente && !isEditing) {
+				alert("CNPJ já cadastrado. Por favor, insira um CNPJ diferente.");
+				setIsLoading(false);
+				return;
+			}
+
+			if (isEditing && editingCnpj) {
 				editarFabricante(formData);
+				setIsEditing(false);
+				alert("Fabricante editado com sucesso!");
 			} else {
 				await adicionarFabricante(formData);
+				alert("Fabricante cadastrado com sucesso!");
 			}
 
-			alert("Fabricante salvo com sucesso!");
-			onSave();
+			setFormData({
+				cnpj: "",
+				nome: "",
+				cep: "",
+				numero: "",
+				complemento: "",
+			});
 		} catch (error) {
 			console.error("Erro ao salvar fabricante:", error);
 			alert("Erro ao salvar fabricante. Tente novamente.");
 		} finally {
-			// Desativa estado de loading independente do resultado
 			setIsLoading(false);
 		}
 	};
@@ -110,23 +110,8 @@ export default function FormInputFabricantes({
 			onSubmit={handleSubmit}
 		>
 			<h3 className="text-xl font-semibold w-full md:col-span-3">
-				{fabricanteEmEdicao ? "Editar Fabricante" : "Cadastre Fabricantes"}
+				{isEditing ? "Editar Fabricante" : "Cadastre Fabricantes"}
 			</h3>
-			<div className="w-full">
-				<div className="mb-2 block">
-					<Label htmlFor="cnpj" value="CNPJ*" />
-				</div>
-				<TextInput
-					id="cnpj"
-					type="text"
-					placeholder="00.000.000/0000-00"
-					required
-					shadow
-					value={formData.cnpj}
-					onChange={handleChange}
-					disabled={isLoading}
-				/>
-			</div>
 			<div className="w-full">
 				<div className="mb-2 block">
 					<Label htmlFor="nome" value="Nome do Fabricante*" />
@@ -138,6 +123,21 @@ export default function FormInputFabricantes({
 					required
 					shadow
 					value={formData.nome}
+					onChange={handleChange}
+					disabled={isLoading}
+				/>
+			</div>
+			<div className="w-full">
+				<div className="mb-2 block">
+					<Label htmlFor="cnpj" value="CNPJ*" />
+				</div>
+				<TextInput
+					id="cnpj"
+					type="text"
+					placeholder="00.000.000/0000-00"
+					required
+					shadow
+					value={formData.cnpj}
 					onChange={handleChange}
 					disabled={isLoading}
 				/>
@@ -172,7 +172,7 @@ export default function FormInputFabricantes({
 					disabled={isLoading}
 				/>
 			</div>
-			<div className="w-full md:col-span-2">
+			<div className="w-full">
 				<div className="mb-2 block">
 					<Label htmlFor="complemento" value="Complemento" />
 				</div>
@@ -186,20 +186,39 @@ export default function FormInputFabricantes({
 					disabled={isLoading}
 				/>
 			</div>
-			<Button
-				className="mx-auto md:col-span-3"
-				type="submit"
-				disabled={isLoading}
-			>
-				{isLoading ? (
-					<>
-						<Spinner size="sm" className="mr-2" />
-						Salvando...
-					</>
-				) : (
-					"Salvar Fabricante"
+			<div className="flex items-center justify-center gap-3 md:col-span-3">
+				<Button type="submit" disabled={isLoading}>
+					{isLoading ? (
+						<>
+							<Spinner size="sm" className="mr-2" />
+							Salvando...
+						</>
+					) : isEditing ? (
+						"Salvar Alterações"
+					) : (
+						"Cadastrar Fabricante"
+					)}
+				</Button>
+				{isEditing && (
+					<Button
+						type="button"
+						color="failure"
+						onClick={() => {
+							setIsEditing(false);
+							setEditingCnpj(null);
+							setFormData({
+								cnpj: "",
+								nome: "",
+								cep: "",
+								numero: "",
+								complemento: "",
+							});
+						}}
+					>
+						Cancelar Edição
+					</Button>
 				)}
-			</Button>
+			</div>
 		</form>
 	);
 }

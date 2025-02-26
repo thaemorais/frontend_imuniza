@@ -1,13 +1,20 @@
-import React from "react";
 import { Edit, Trash2 } from "react-feather";
 import { useVacinas } from "../../../contexts/VacinasContext";
-import { Vacina } from "../../../contexts/VacinasContext";
 
-interface ListaVacinasProps {
-	onEditVacina: (vacina: Vacina) => void;
+interface Vacina {
+	nome: string;
+	cnpjFabricante: string;
+	tipo: string;
+	doses: number;
+	intervalo: string;
+	indicacao: string[];
 }
 
-export default function ListaVacinas({ onEditVacina }: ListaVacinasProps) {
+export default function ListaVacinas({
+	onEdit,
+}: {
+	onEdit: (vacina: Vacina) => void;
+}) {
 	const { vacinas, removerVacina, fabricantes } = useVacinas();
 
 	const handleDeleteVacina = (nome: string) => {
@@ -26,6 +33,29 @@ export default function ListaVacinas({ onEditVacina }: ListaVacinasProps) {
 		return fabricante ? fabricante.nome : "Desconhecido";
 	};
 
+	// Função para formatar as indicações para melhor leitura
+	const formatarIndicacoes = (indicacoes: string[]) => {
+		if (!indicacoes || indicacoes.length === 0) return "Não informado";
+
+		// Mapeamento para nomes mais legíveis
+		const nomeIndicacoes: { [key: string]: string } = {
+			gestantes: "Gestantes",
+			puérperas: "Puérperas",
+			"profissionais-saude": "Profissionais de Saúde",
+			idosos: "Idosos (60+ anos)",
+			criancas: "Crianças (0-11 anos)",
+			adolescentes: "Adolescentes (12-17 anos)",
+			adultos: "Adultos (18-59 anos)",
+			comorbidades: "Pessoas com Comorbidades",
+			imunossuprimidos: "Imunossuprimidos",
+			indigenas: "Indígenas e Quilombolas",
+			essenciais: "Trabalhadores Essenciais",
+			"populacao-geral": "População Geral",
+		};
+
+		return indicacoes.map((ind) => nomeIndicacoes[ind] || ind).join(", ");
+	};
+
 	return (
 		<div className="mx-auto my-10">
 			<h3 className="text-xl font-semibold">Vacinas Cadastradas</h3>
@@ -38,7 +68,7 @@ export default function ListaVacinas({ onEditVacina }: ListaVacinasProps) {
 						>
 							<div className="absolute right-4 top-[50%] translate-y-[-50%] flex flex-col gap-2">
 								<button
-									onClick={() => onEditVacina(vacina)}
+									onClick={() => onEdit(vacina)}
 									className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
 									title="Editar vacina"
 								>
@@ -70,12 +100,14 @@ export default function ListaVacinas({ onEditVacina }: ListaVacinasProps) {
 								<p>
 									<strong>Doses:</strong> {vacina.doses}
 								</p>
+								{vacina.intervalo && (
+									<p>
+										<strong>Intervalo:</strong> {vacina.intervalo}
+									</p>
+								)}
 								<p>
-									<strong>Intervalo:</strong>{" "}
-									{vacina.intervalo ? vacina.intervalo : "Não informado"}
-								</p>
-								<p className="md:col-span-2">
-									<strong>Indicações:</strong> {vacina.indicacao.join(", ")}
+									<strong>Indicações:</strong>{" "}
+									{formatarIndicacoes(vacina.indicacao)}
 								</p>
 							</div>
 						</li>

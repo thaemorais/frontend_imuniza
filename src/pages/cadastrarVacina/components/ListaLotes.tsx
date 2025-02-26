@@ -2,10 +2,10 @@ import { Edit, Trash2 } from "react-feather";
 import { LoteVacina, useVacinas } from "../../../contexts/VacinasContext";
 
 interface ListaLotesProps {
-	onEditLote: (lote: LoteVacina) => void;
+	onEdit: (lote: LoteVacina) => void;
 }
 
-export default function ListaLotes({ onEditLote }: ListaLotesProps) {
+export default function ListaLotes({ onEdit }: ListaLotesProps) {
 	const { lotes, removerLote, vacinas } = useVacinas();
 
 	const getNomeVacina = (nome: string) => {
@@ -31,6 +31,7 @@ export default function ListaLotes({ onEditLote }: ListaLotesProps) {
 						>
 							<div className="absolute right-4 top-[50%] translate-y-[-50%] flex flex-col gap-2">
 								<button
+									onClick={() => onEdit(lote)}
 									className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
 									title="Editar lote"
 								>
@@ -47,10 +48,10 @@ export default function ListaLotes({ onEditLote }: ListaLotesProps) {
 
 							<div className="max-w-[92%]">
 								<p>
-									<strong>Lote:</strong> {lote.lote}
+									<strong>Vacina:</strong> {getNomeVacina(lote.vacina)}
 								</p>
 								<p>
-									<strong>Vacina:</strong> {getNomeVacina(lote.vacina)}
+									<strong>Lote:</strong> {lote.lote}
 								</p>
 								<p>
 									<strong>Validade:</strong>{" "}

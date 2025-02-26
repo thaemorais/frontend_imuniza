@@ -75,20 +75,18 @@ export default function FormInputMorador({
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		// Valida o CEP
 		const cepValido = await validaCEP(formData.cep);
 		if (!cepValido) {
 			alert("CEP inválido. Por favor, insira um CEP válido.");
-			return; // Interrompe a execução se o CEP for inválido
+			return;
 		}
 
-		// Verifica se o CPF já está cadastrado
 		const cpfExistente = moradores.some(
 			(morador) => morador.cpf === formData.cpf
 		);
 		if (cpfExistente && !isEditing) {
 			alert("CPF já cadastrado. Por favor, insira um CPF diferente.");
-			return; // Interrompe a execução se o CPF já estiver cadastrado
+			return;
 		}
 
 		// Adiciona ou edita o morador
@@ -96,6 +94,7 @@ export default function FormInputMorador({
 			editarMorador(editingCpf, formData);
 			setIsEditing(false);
 			setEditingCpf(null);
+			alert("Morador editado com sucesso!");
 		} else {
 			adicionarMorador(formData);
 			alert("Morador cadastrado com sucesso!");
@@ -452,39 +451,40 @@ export default function FormInputMorador({
 						</div>
 					</div>
 				</div>
-
-				<Button type="submit" className="mx-auto">
-					{isEditing ? "Salvar Alterações" : "Cadastrar Morador"}
-				</Button>
-				{isEditing && (
-					<Button
-						type="button"
-						color="failure"
-						className="mx-auto"
-						onClick={() => {
-							setIsEditing(false);
-							setEditingCpf(null);
-							setFormData({
-								nome: "",
-								cpf: "",
-								sus: "",
-								cep: "",
-								numero: "",
-								complemento: "",
-								dataNasc: new Date(0),
-								nomeMae: "",
-								sexo: "",
-								estadoCivil: "",
-								escolaridade: "",
-								etnia: "",
-								planoSaude: false,
-								vacinas: [],
-							});
-						}}
-					>
-						Cancelar Edição
+				<div className="flex items-center justify-center gap-3 w-full">
+					<Button type="submit" className="">
+						{isEditing ? "Salvar Alterações" : "Cadastrar Morador"}
 					</Button>
-				)}
+					{isEditing && (
+						<Button
+							type="button"
+							color="failure"
+							className=""
+							onClick={() => {
+								setIsEditing(false);
+								setEditingCpf(null);
+								setFormData({
+									nome: "",
+									cpf: "",
+									sus: "",
+									cep: "",
+									numero: "",
+									complemento: "",
+									dataNasc: new Date(0),
+									nomeMae: "",
+									sexo: "",
+									estadoCivil: "",
+									escolaridade: "",
+									etnia: "",
+									planoSaude: false,
+									vacinas: [],
+								});
+							}}
+						>
+							Cancelar Edição
+						</Button>
+					)}
+				</div>
 			</form>
 		</>
 	);
