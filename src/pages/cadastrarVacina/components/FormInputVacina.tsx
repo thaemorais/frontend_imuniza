@@ -133,7 +133,7 @@ export default function FormInputVacina({
 					shadow
 					value={formData.nome}
 					onChange={handleChange}
-					disabled={isLoading}
+					disabled={isLoading || isEditing}
 				/>
 			</div>
 			<div className="w-full">
@@ -145,7 +145,7 @@ export default function FormInputVacina({
 					required
 					value={formData.cnpjFabricante}
 					onChange={handleChange}
-					disabled={isLoading}
+					disabled={isLoading || isEditing}
 				>
 					<option value="">Selecione um fabricante</option>
 					{fabricantes.map((fabricante) => (

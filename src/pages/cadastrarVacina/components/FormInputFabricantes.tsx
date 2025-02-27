@@ -139,7 +139,7 @@ export default function FormInputFabricantes({
 					shadow
 					value={formData.cnpj}
 					onChange={handleChange}
-					disabled={isLoading}
+					disabled={isLoading || isEditing}
 				/>
 			</div>
 			<div className="w-full">

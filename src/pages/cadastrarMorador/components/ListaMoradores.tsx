@@ -3,7 +3,6 @@ import { useMoradores } from "../../../contexts/MoradoresContext";
 import getEnderecoFromCEP from "./../../utils/getEnderecoFromCEP";
 import { Edit, Trash2 } from "react-feather";
 
-// Tipos
 interface Morador {
 	nome: string;
 	cpf: string;
@@ -118,14 +117,28 @@ export default function ListaMoradores({
 									<strong>Endereço: </strong>
 									{enderecos[morador.cep] ? (
 										<>
-											{enderecos[morador.cep].rua}, {morador.numero}
-											{morador.complemento && `, ${morador.complemento}`},{" "}
-											{enderecos[morador.cep].bairro},{" "}
-											{enderecos[morador.cep].cidade} -{" "}
-											{enderecos[morador.cep].estado} - {morador.cep}
+											{enderecos[morador.cep].rua &&
+											enderecos[morador.cep].bairro ? (
+												<>
+													{enderecos[morador.cep].rua}, {morador.numero}
+													{morador.complemento &&
+														`, ${morador.complemento}`},{" "}
+													{enderecos[morador.cep].bairro},{" "}
+													{enderecos[morador.cep].cidade} -{" "}
+													{enderecos[morador.cep].estado} - {morador.cep}
+												</>
+											) : (
+												<>
+													{morador.numero}
+													{morador.complemento &&
+														`, ${morador.complemento}`},{" "}
+													{enderecos[morador.cep].cidade} -{" "}
+													{enderecos[morador.cep].estado} - {morador.cep}
+												</>
+											)}
 										</>
 									) : (
-										<span>Endereço não encontrado através do CEP</span>
+										<span>Carregando endereço...</span>
 									)}
 								</p>
 								<p>
@@ -157,12 +170,18 @@ export default function ListaMoradores({
 									<strong>Tem plano de saúde? </strong>
 									{morador.planoSaude ? "Sim" : "Não"}
 								</p>
-								<p className="md:col-span-2">
+								<div className="md:col-span-2">
 									<strong>Vacinas tomadas: </strong>
-									{morador.vacinas.length > 0
-										? morador.vacinas.join(", ")
-										: "Ainda sem vacinas registradas."}
-								</p>
+									{morador.vacinas.length > 0 ? (
+										<ul className="list-disc list-inside">
+											{morador.vacinas.map((vacina, index) => (
+												<li key={index}>{vacina}</li>
+											))}
+										</ul>
+									) : (
+										<p>Ainda sem vacinas registradas.</p>
+									)}
+								</div>
 							</div>
 						</li>
 					))}

@@ -4,12 +4,12 @@ export default function Sobre() {
 	return (
 		<>
 			<section className="max-w-[1280px] px-8 w-full my-8 mx-auto">
-				<PageTitle title="SOBRE O PROJETO" />
+				<PageTitle title="Sobre o projeto" />
 				<p>
 					O site Imuniza foi elaborado por 5 estudantes do curso de Ciência da
 					Computação da Universidade Federal do Espírito Santo como fruto de
 					avaliação principal na disciplina de Banco de Dados, ministrada pela
-					Professora Doutora Silvia [...].
+					Professora Doutora Silvia das Dores Rissino.
 				</p>
 				<p>
 					O objetivo é trabalhar a construção de uma aplicação completa com foco

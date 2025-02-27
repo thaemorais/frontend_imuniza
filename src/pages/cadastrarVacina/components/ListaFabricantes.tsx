@@ -91,12 +91,25 @@ export default function ListaFabricantes({
 									<strong>Endereço: </strong>
 									{enderecos[fabricante.cep] ? (
 										<>
-											{enderecos[fabricante.cep].rua}, {fabricante.numero}
-											{fabricante.complemento &&
-												`, ${fabricante.complemento}`},{" "}
-											{enderecos[fabricante.cep].bairro},{" "}
-											{enderecos[fabricante.cep].cidade} -{" "}
-											{enderecos[fabricante.cep].estado} - {fabricante.cep}
+											{enderecos[fabricante.cep].rua &&
+											enderecos[fabricante.cep].bairro ? (
+												<>
+													{enderecos[fabricante.cep].rua}, {fabricante.numero}
+													{fabricante.complemento &&
+														`, ${fabricante.complemento}`}
+													, {enderecos[fabricante.cep].bairro},{" "}
+													{enderecos[fabricante.cep].cidade} -{" "}
+													{enderecos[fabricante.cep].estado} - {fabricante.cep}
+												</>
+											) : (
+												<>
+													{fabricante.numero}
+													{fabricante.complemento &&
+														`, ${fabricante.complemento}`}
+													, {enderecos[fabricante.cep].cidade} -{" "}
+													{enderecos[fabricante.cep].estado} - {fabricante.cep}
+												</>
+											)}
 										</>
 									) : (
 										<span>Carregando endereço através do CEP...</span>

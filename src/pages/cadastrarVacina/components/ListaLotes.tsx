@@ -55,7 +55,9 @@ export default function ListaLotes({ onEdit }: ListaLotesProps) {
 								</p>
 								<p>
 									<strong>Validade:</strong>{" "}
-									{new Date(lote.validade).toLocaleDateString("pt-BR")}
+									{new Date(lote.validade).toLocaleDateString("pt-BR", {
+										timeZone: "UTC",
+									})}
 								</p>
 							</div>
 						</li>

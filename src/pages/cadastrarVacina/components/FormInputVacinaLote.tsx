@@ -27,7 +27,7 @@ export default function FormInputVacinaLote({
 	setEditingNumeroLote,
 	preencherFormularioParaEdicao,
 }: FormInputVacinaLoteProps) {
-	const { adicionarLote, editarLote, vacinas } = useVacinas();
+	const { adicionarLote, editarLote, lotes, vacinas } = useVacinas();
 	const [isLoading, setIsLoading] = useState(false);
 
 	const handleChange = (
@@ -37,23 +37,47 @@ export default function FormInputVacinaLote({
 		setFormData((prev) => ({ ...prev, [id]: value }));
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		setIsLoading(true);
 
 		try {
+			const validadeDate = new Date(formData.validade);
+			const today = new Date();
+			validadeDate.setHours(0, 0, 0, 0);
+			today.setHours(0, 0, 0, 0);
+			if (validadeDate < today) {
+				alert(
+					"A data de validade não pode ser anterior ao dia atual. O lote está vencido."
+				);
+				setIsLoading(false);
+				return;
+			}
+
+			const loteExistente = lotes.some(
+				(lote) =>
+					lote.lote === formData.lote &&
+					(!isEditing || lote.lote !== editingNumeroLote)
+			);
+			if (loteExistente) {
+				alert(
+					"Já existe um lote com este número. Por favor, insira um número de lote diferente."
+				);
+				setIsLoading(false);
+				return;
+			}
+
 			if (isEditing && editingNumeroLote) {
-				editarLote(formData); // Atualiza o lote no contexto
+				editarLote(formData);
 				setIsEditing(false);
 				setEditingNumeroLote(null);
 				alert("Lote editado com sucesso!");
 			} else {
-				adicionarLote(formData); // Adiciona um novo lote no contexto
+				await adicionarLote(formData);
 				alert("Lote cadastrado com sucesso!");
 			}
 
-			// Limpa o formulário após o envio
 			setFormData({ lote: "", vacina: "", validade: "" });
 		} catch (error) {
 			console.error("Erro ao salvar Lote de Vacina:", error);
@@ -103,7 +127,7 @@ export default function FormInputVacinaLote({
 					shadow
 					value={formData.lote}
 					onChange={handleChange}
-					disabled={isLoading}
+					disabled={isLoading || isEditing}
 				/>
 			</div>
 			<div className="w-full">
@@ -130,7 +154,7 @@ export default function FormInputVacinaLote({
 					) : isEditing ? (
 						"Salvar Alterações"
 					) : (
-						"Cadastrar Fabricante"
+						"Cadastrar Lote"
 					)}
 				</Button>
 				{isEditing && (

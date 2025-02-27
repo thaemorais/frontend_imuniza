@@ -27,17 +27,14 @@ export default function ListaVacinas({
 		}
 	};
 
-	// Função para obter nome do fabricante pelo CNPJ
 	const getNomeFabricante = (cnpj: string) => {
 		const fabricante = fabricantes.find((fab) => fab.cnpj === cnpj);
 		return fabricante ? fabricante.nome : "Desconhecido";
 	};
 
-	// Função para formatar as indicações para melhor leitura
 	const formatarIndicacoes = (indicacoes: string[]) => {
 		if (!indicacoes || indicacoes.length === 0) return "Não informado";
 
-		// Mapeamento para nomes mais legíveis
 		const nomeIndicacoes: { [key: string]: string } = {
 			gestantes: "Gestantes",
 			puérperas: "Puérperas",

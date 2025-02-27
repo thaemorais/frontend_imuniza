@@ -34,7 +34,6 @@ interface LoteVacina {
 }
 
 export default function CadastrarVacina() {
-	// Estado para formulário de fabricantes
 	const [formDataFabricante, setFormDataFabricante] = useState<Fabricante>({
 		cnpj: "",
 		nome: "",
@@ -48,7 +47,6 @@ export default function CadastrarVacina() {
 		string | null
 	>(null);
 
-	// Estado para formulário de vacinas
 	const [formDataVacina, setFormDataVacina] = useState<Vacina>({
 		nome: "",
 		cnpjFabricante: "",
@@ -62,7 +60,6 @@ export default function CadastrarVacina() {
 		null
 	);
 
-	// Estado para formulário de lotes
 	const [formDataLote, setFormDataLote] = useState<LoteVacina>({
 		lote: "",
 		vacina: "",
@@ -73,21 +70,18 @@ export default function CadastrarVacina() {
 		null
 	);
 
-	// Handlers para edição de fabricantes
 	const preencherFormularioParaEdicaoFabricante = (fabricante: Fabricante) => {
 		setFormDataFabricante(fabricante);
 		setIsEditingFabricante(true);
 		setEditingCnpjFabricante(fabricante.cnpj);
 	};
 
-	// Handlers para edição de vacinas
 	const preencherFormularioParaEdicaoVacina = (vacina: Vacina) => {
 		setFormDataVacina(vacina);
 		setIsEditingVacina(true);
 		setEditingNomeVacina(vacina.nome);
 	};
 
-	// Handlers para edição de lotes
 	const preencherFormularioParaEdicaoLote = (lote: LoteVacina) => {
 		setFormDataLote(lote);
 		setIsEditingLote(true);

@@ -1,15 +1,9 @@
-import { Aplicacao, useAplicacoes } from "../../../contexts/AplicacoesContext";
+import { Trash2 } from "react-feather";
+import { useAplicacoes } from "../../../contexts/AplicacoesContext";
 import { useMoradores } from "../../../contexts/MoradoresContext";
 import { useVacinas } from "../../../contexts/VacinasContext";
-import { Edit, Trash2 } from "react-feather";
 
-interface ListaAplicacoesProps {
-	onEditAplicacao?: (aplicacao: Aplicacao) => void;
-}
-
-export default function ListaAplicacoes({
-	onEditAplicacao,
-}: ListaAplicacoesProps) {
+export default function ListaAplicacoes() {
 	const { aplicacoes, removerAplicacao } = useAplicacoes();
 	const { moradores, editarMorador } = useMoradores();
 	const { lotes, vacinas } = useVacinas();
@@ -36,7 +30,6 @@ export default function ListaAplicacoes({
 		if (window.confirm("Tem certeza que deseja excluir esta aplicação?")) {
 			removerAplicacao(cpfMorador, loteVacina, doseAplicada);
 
-			// Atualizar a lista de vacinas do morador
 			const morador = moradores.find((m) => m.cpf === cpfMorador);
 			if (morador) {
 				const vacinaAplicada = `${getVacinaNome(
@@ -64,13 +57,6 @@ export default function ListaAplicacoes({
 							className="border rounded-lg p-4 relative shadow-sm"
 						>
 							<div className="absolute right-4 top-[50%] translate-y-[-50%] flex flex-col gap-2">
-								<button
-									onClick={() => onEditAplicacao?.(aplicacao)}
-									className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
-									title="Editar aplicação"
-								>
-									<Edit size={20} />
-								</button>
 								<button
 									onClick={() =>
 										handleDeleteAplicacao(

@@ -1,8 +1,9 @@
-import { Button, Label, TextInput } from "flowbite-react";
-import { JSX } from "react";
+import { Button, Label, Spinner, TextInput } from "flowbite-react";
+import { JSX, useState } from "react";
 import { useMoradores } from "../../../contexts/MoradoresContext";
 import { Morador } from "../../../contexts/MoradoresContext";
 import getEnderecoFromCEP from "../../utils/getEnderecoFromCEP";
+import applyMask from "../../utils/applyMask";
 
 interface FormInputMoradorProps {
 	formData: Morador;
@@ -23,15 +24,8 @@ export default function FormInputMorador({
 	setEditingCpf,
 }: FormInputMoradorProps): JSX.Element {
 	const { adicionarMorador, editarMorador, moradores } = useMoradores();
-	const vacinas = localStorage.getItem("vacinas");
+	const [isLoading, setIsLoading] = useState(false);
 
-	// Mascaras (react-input-mask não tava funcionando)
-	const applyMask = (value: string, mask: string) => {
-		let i = 0;
-		return mask.replace(/#/g, () => value[i++] || "");
-	};
-
-	// Função para atualizar o valor de um campo no formData e aplicar as mascaras
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value, type, checked } = e.target;
 
@@ -71,52 +65,58 @@ export default function FormInputMorador({
 		}
 	};
 
-	// Função para enviar o formulário
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		const cepValido = await validaCEP(formData.cep);
-		if (!cepValido) {
-			alert("CEP inválido. Por favor, insira um CEP válido.");
-			return;
-		}
+		setIsLoading(true);
 
-		const cpfExistente = moradores.some(
-			(morador) => morador.cpf === formData.cpf
-		);
-		if (cpfExistente && !isEditing) {
-			alert("CPF já cadastrado. Por favor, insira um CPF diferente.");
-			return;
-		}
+		try {
+			const cepValido = await validaCEP(formData.cep);
+			if (!cepValido) {
+				alert("CEP inválido. Por favor, insira um CEP válido.");
+				return;
+			}
 
-		// Adiciona ou edita o morador
-		if (isEditing && editingCpf) {
-			editarMorador(editingCpf, formData);
-			setIsEditing(false);
-			setEditingCpf(null);
-			alert("Morador editado com sucesso!");
-		} else {
-			adicionarMorador(formData);
-			alert("Morador cadastrado com sucesso!");
-		}
+			const cpfExistente = moradores.some(
+				(morador) => morador.cpf === formData.cpf
+			);
+			if (cpfExistente && !isEditing) {
+				alert("CPF já cadastrado. Por favor, insira um CPF diferente.");
+				return;
+			}
 
-		// Limpa o formulário após o envio
-		setFormData({
-			nome: "",
-			cpf: "",
-			sus: "",
-			cep: "",
-			numero: "",
-			complemento: "",
-			dataNasc: new Date(0),
-			nomeMae: "",
-			sexo: "",
-			estadoCivil: "",
-			escolaridade: "",
-			etnia: "",
-			planoSaude: false,
-			vacinas: [],
-		});
+			if (isEditing && editingCpf) {
+				editarMorador(editingCpf, formData);
+				setIsEditing(false);
+				setEditingCpf(null);
+				alert("Morador editado com sucesso!");
+			} else {
+				adicionarMorador(formData);
+				alert("Morador cadastrado com sucesso!");
+			}
+
+			setFormData({
+				nome: "",
+				cpf: "",
+				sus: "",
+				cep: "",
+				numero: "",
+				complemento: "",
+				dataNasc: new Date(),
+				nomeMae: "",
+				sexo: "",
+				estadoCivil: "",
+				escolaridade: "",
+				etnia: "",
+				planoSaude: false,
+				vacinas: [],
+			});
+		} catch (error) {
+			console.error("Erro ao salvar morador:", error);
+			alert("Erro ao salvar morador. Tente novamente.");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -137,6 +137,7 @@ export default function FormInputMorador({
 						onChange={handleChange}
 						required
 						shadow
+						disabled={isLoading}
 					/>
 				</div>
 
@@ -151,6 +152,7 @@ export default function FormInputMorador({
 						value={formData.sus}
 						onChange={handleChange}
 						shadow
+						disabled={isLoading}
 					/>
 				</div>
 
@@ -166,6 +168,7 @@ export default function FormInputMorador({
 						onChange={handleChange}
 						required
 						shadow
+						disabled={isLoading || isEditing}
 					/>
 				</div>
 				<div className="w-[30%]">
@@ -180,6 +183,7 @@ export default function FormInputMorador({
 						onChange={handleChange}
 						required
 						shadow
+						disabled={isLoading}
 					/>
 				</div>
 				<div className="w-[30%]">
@@ -194,6 +198,7 @@ export default function FormInputMorador({
 						onChange={handleChange}
 						required
 						shadow
+						disabled={isLoading}
 					/>
 				</div>
 				<div className="w-[30%]">
@@ -207,6 +212,7 @@ export default function FormInputMorador({
 						value={formData.complemento}
 						onChange={handleChange}
 						shadow
+						disabled={isLoading}
 					/>
 				</div>
 				<div className="w-[30%]">
@@ -221,6 +227,7 @@ export default function FormInputMorador({
 						placeholder="DD/MM/AAAA"
 						required
 						shadow
+						disabled={isLoading}
 					/>
 				</div>
 				<div className="w-[30%]">
@@ -235,6 +242,7 @@ export default function FormInputMorador({
 						onChange={handleChange}
 						required
 						shadow
+						disabled={isLoading}
 					/>
 				</div>
 				<div className="w-[30%]">
@@ -249,6 +257,7 @@ export default function FormInputMorador({
 						onChange={handleChange}
 						required
 						shadow
+						disabled={isLoading}
 					/>
 				</div>
 				<div className="w-[30%]">
@@ -266,6 +275,7 @@ export default function FormInputMorador({
 								onChange={handleChange}
 								required
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="sexo-masculino" value="Masculino" />
 						</div>
@@ -279,6 +289,7 @@ export default function FormInputMorador({
 								onChange={handleChange}
 								required
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="sexo-feminino" value="Feminino" />
 						</div>
@@ -292,6 +303,7 @@ export default function FormInputMorador({
 								onChange={handleChange}
 								required
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="sexo-nb" value="Não Binário" />
 						</div>
@@ -305,6 +317,7 @@ export default function FormInputMorador({
 								onChange={handleChange}
 								required
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="sexo-na" value="Prefere não dizer" />
 						</div>
@@ -324,6 +337,7 @@ export default function FormInputMorador({
 								checked={formData.escolaridade === "Fundamental"}
 								onChange={handleChange}
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="fundamental" value="Fundamental Completo" />
 						</div>
@@ -336,6 +350,7 @@ export default function FormInputMorador({
 								checked={formData.escolaridade === "Médio"}
 								onChange={handleChange}
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="medio" value="Médio Completo" />
 						</div>
@@ -348,6 +363,7 @@ export default function FormInputMorador({
 								checked={formData.escolaridade === "Superior"}
 								onChange={handleChange}
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="superior" value="Superior Completo" />
 						</div>
@@ -367,6 +383,7 @@ export default function FormInputMorador({
 								checked={formData.etnia === "Branca"}
 								onChange={handleChange}
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="branca" value="Branca" />
 						</div>
@@ -379,6 +396,7 @@ export default function FormInputMorador({
 								checked={formData.etnia === "Negra"}
 								onChange={handleChange}
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="negra" value="Negra" />
 						</div>
@@ -391,6 +409,7 @@ export default function FormInputMorador({
 								checked={formData.etnia === "Parda"}
 								onChange={handleChange}
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="parda" value="Parda" />
 						</div>
@@ -403,6 +422,7 @@ export default function FormInputMorador({
 								checked={formData.etnia === "Amarela"}
 								onChange={handleChange}
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="amarela" value="Amarela" />
 						</div>
@@ -415,6 +435,7 @@ export default function FormInputMorador({
 								checked={formData.etnia === "Indígena"}
 								onChange={handleChange}
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="indigena" value="Indígena" />
 						</div>
@@ -434,6 +455,7 @@ export default function FormInputMorador({
 								checked={formData.planoSaude === true}
 								onChange={handleChange}
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="sim" value="Sim" />
 						</div>
@@ -446,14 +468,24 @@ export default function FormInputMorador({
 								checked={formData.planoSaude === false}
 								onChange={handleChange}
 								className="mr-2"
+								disabled={isLoading}
 							/>
 							<Label htmlFor="nao" value="Não" />
 						</div>
 					</div>
 				</div>
 				<div className="flex items-center justify-center gap-3 w-full">
-					<Button type="submit" className="">
-						{isEditing ? "Salvar Alterações" : "Cadastrar Morador"}
+					<Button type="submit" className="" disabled={isLoading}>
+						{isLoading ? (
+							<>
+								<Spinner size="sm" className="mr-2" />
+								Salvando...
+							</>
+						) : isEditing ? (
+							"Salvar Alterações"
+						) : (
+							"Cadastrar Morador"
+						)}
 					</Button>
 					{isEditing && (
 						<Button

@@ -3,13 +3,15 @@ import casosDeUso from "../../assets/imagens/casos_de_uso.png";
 import classes from "../../assets/imagens/classes.png";
 import conceitual from "../../assets/imagens/conceitual.jpg";
 import logico from "../../assets/imagens/logico.jpg";
+import PageTitle from "../../components/PageTitle";
 
 export default function Documentacao(): JSX.Element {
 	return (
 		<>
+			<PageTitle title="Documentação" />
 			<section className="max-w-[1280px] px-8 w-full my-8 mx-auto">
 				<div className="w-full text-center mx-auto">
-					<div id="casosDeUso" className="my-40">
+					<div id="casosDeUso" className="my-60">
 						<h2 className="font-bold text-xl">Diagrama de casos de uso</h2>
 						<div className="flex items-center justify-between w-full mx-auto my-4">
 							<div className="w-1/2">
@@ -31,7 +33,7 @@ export default function Documentacao(): JSX.Element {
 							/>
 						</div>
 					</div>
-					<div id="classes" className="my-40">
+					<div id="classes" className="my-60">
 						<h2 className="font-bold text-xl">Diagrama de classes</h2>
 						<div className="flex items-center justify-between w-full mx-auto gap-4">
 							<img
@@ -54,7 +56,7 @@ export default function Documentacao(): JSX.Element {
 							</div>
 						</div>
 					</div>
-					<div id="conceitual" className="my-40">
+					<div id="conceitual" className="my-60">
 						<h2 className="font-bold text-xl">
 							Modelo Conceitual (Modelo de Entidade-Relacionamento)
 						</h2>
@@ -79,7 +81,7 @@ export default function Documentacao(): JSX.Element {
 							/>
 						</div>
 					</div>
-					<div id="logico" className="my-40">
+					<div id="logico" className="my-60">
 						<h2 className="font-bold text-xl">
 							Modelo Lógico (Modelo de Entidade-Relacionamento)
 						</h2>

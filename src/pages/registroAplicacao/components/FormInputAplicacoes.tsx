@@ -1,33 +1,28 @@
 import { useState } from "react";
-import { Label, Select, TextInput, Button } from "flowbite-react";
-import { useMoradores, Morador } from "../../../contexts/MoradoresContext";
+import { Button, Label, Select, TextInput, Spinner } from "flowbite-react";
+import { Aplicacao, useAplicacoes } from "../../../contexts/AplicacoesContext";
+import { useMoradores } from "../../../contexts/MoradoresContext";
 import {
-	useVacinas,
-	LoteVacina,
-	Vacina,
 	Fabricante,
+	LoteVacina,
+	useVacinas,
+	Vacina,
 } from "../../../contexts/VacinasContext";
-import { useAplicacoes } from "../../../contexts/AplicacoesContext";
-
-interface FormData {
-	morador: string;
-	vacinaLote: string;
-	doseAplicada: number;
-}
 
 export default function FormInputAplicacoes() {
 	const { moradores, editarMorador } = useMoradores();
 	const { lotes, vacinas, fabricantes } = useVacinas();
 	const { aplicacoes, adicionarAplicacao } = useAplicacoes();
-	const [formData, setFormData] = useState<FormData>({
-		morador: "",
-		vacinaLote: "",
+	const [formData, setFormData] = useState<Aplicacao>({
+		cpfMorador: "",
+		loteVacina: "",
 		doseAplicada: 1,
 	});
 	const [selectedLote, setSelectedLote] = useState<LoteVacina | null>(null);
 	const [selectedVacina, setSelectedVacina] = useState<Vacina | null>(null);
 	const [selectedFabricante, setSelectedFabricante] =
 		useState<Fabricante | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -35,7 +30,7 @@ export default function FormInputAplicacoes() {
 		const { id, value } = e.target;
 		setFormData((prev) => ({ ...prev, [id]: value }));
 
-		if (id === "vacinaLote") {
+		if (id === "loteVacina") {
 			const lote = lotes.find((lote) => lote.lote === value);
 			setSelectedLote(lote || null);
 			if (lote) {
@@ -56,52 +51,53 @@ export default function FormInputAplicacoes() {
 		}
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		setIsLoading(true);
 
-		// Verificar se a aplicação já existe
-		const aplicacaoExistente = aplicacoes.some(
-			(aplicacao) =>
-				aplicacao.cpfMorador === formData.morador &&
-				aplicacao.loteVacina === formData.vacinaLote &&
-				aplicacao.doseAplicada === formData.doseAplicada
-		);
+		try {
+			const aplicacaoExistente = aplicacoes.some(
+				(aplicacao) =>
+					aplicacao.cpfMorador === formData.cpfMorador &&
+					aplicacao.loteVacina === formData.loteVacina &&
+					aplicacao.doseAplicada === formData.doseAplicada
+			);
 
-		if (aplicacaoExistente) {
-			alert("Este morador já recebeu esta dose desta vacina.");
-			return;
-		}
+			if (aplicacaoExistente) {
+				alert("Este morador já recebeu esta dose desta vacina.");
+				setIsLoading(false);
+				return;
+			}
 
-		// Adicionar a aplicação
-		adicionarAplicacao({
-			cpfMorador: formData.morador,
-			loteVacina: formData.vacinaLote,
-			doseAplicada: formData.doseAplicada,
-		});
+			adicionarAplicacao(formData);
+			alert("Aplicação cadastrada com sucesso!");
 
-		// Atualizar a lista de vacinas do morador
-		const morador = moradores.find((m) => m.cpf === formData.morador);
-		if (morador) {
-			const vacinaAplicada = `${selectedVacina?.nome} - Lote: ${formData.vacinaLote} - Dose: ${formData.doseAplicada}`;
-			const vacinasAtualizadas = [...morador.vacinas, vacinaAplicada];
-			editarMorador(formData.morador, {
-				...morador,
-				vacinas: vacinasAtualizadas,
+			const morador = moradores.find((m) => m.cpf === formData.cpfMorador);
+			if (morador) {
+				const vacinaAplicada = `${selectedVacina?.nome} - Lote: ${formData.loteVacina} - Dose: ${formData.doseAplicada}`;
+				const vacinasAtualizadas = [...morador.vacinas, vacinaAplicada];
+				editarMorador(formData.cpfMorador, {
+					...morador,
+					vacinas: vacinasAtualizadas,
+				});
+			}
+
+			setFormData({
+				cpfMorador: "",
+				loteVacina: "",
+				doseAplicada: 1,
 			});
+			setSelectedLote(null);
+			setSelectedVacina(null);
+			setSelectedFabricante(null);
+		} catch (error) {
+			console.error("Erro ao salvar aplicação:", error);
+			alert("Erro ao salvar aplicação. Tente novamente.");
+		} finally {
+			setIsLoading(false);
 		}
-
-		alert("Aplicação registrada com sucesso!");
-		setFormData({
-			morador: "",
-			vacinaLote: "",
-			doseAplicada: 1,
-		});
-		setSelectedLote(null);
-		setSelectedVacina(null);
-		setSelectedFabricante(null);
 	};
 
-	// Ordenar moradores e lotes por ordem alfabética
 	const sortedMoradores = [...moradores].sort((a, b) =>
 		a.nome.localeCompare(b.nome)
 	);
@@ -119,13 +115,14 @@ export default function FormInputAplicacoes() {
 			</h3>
 			<div className="w-full">
 				<div className="mb-2 block">
-					<Label htmlFor="morador" value="Morador*" />
+					<Label htmlFor="cpfMorador" value="CPF do Morador*" />
 				</div>
 				<Select
-					id="morador"
+					id="cpfMorador"
 					required
-					value={formData.morador}
+					value={formData.cpfMorador}
 					onChange={handleChange}
+					disabled={isLoading}
 				>
 					<option value="">Selecione um morador</option>
 					{sortedMoradores.map((morador) => (
@@ -135,16 +132,16 @@ export default function FormInputAplicacoes() {
 					))}
 				</Select>
 			</div>
-
 			<div className="w-full">
 				<div className="mb-2 block">
-					<Label htmlFor="vacinaLote" value="Vacina/Lote*" />
+					<Label htmlFor="loteVacina" value="Vacina/Lote*" />
 				</div>
 				<Select
-					id="vacinaLote"
+					id="loteVacina"
 					required
-					value={formData.vacinaLote}
+					value={formData.loteVacina}
 					onChange={handleChange}
+					disabled={isLoading}
 				>
 					<option value="">Selecione uma vacina/lote</option>
 					{sortedLotes.map((lote) => (
@@ -154,7 +151,6 @@ export default function FormInputAplicacoes() {
 					))}
 				</Select>
 			</div>
-
 			<div className="w-full">
 				<div className="mb-2 block">
 					<Label htmlFor="doseAplicada" value="Dose aplicada*" />
@@ -186,10 +182,18 @@ export default function FormInputAplicacoes() {
 					</Select>
 				)}
 			</div>
-
-			<Button className="mx-auto md:col-span-3" type="submit">
-				Registrar Aplicação
-			</Button>
+			<div className="flex items-center justify-center gap-3 md:col-span-3">
+				<Button type="submit" disabled={isLoading}>
+					{isLoading ? (
+						<>
+							<Spinner size="sm" className="mr-2" />
+							Salvando...
+						</>
+					) : (
+						"Registrar Aplicação"
+					)}
+				</Button>
+			</div>
 		</form>
 	);
 }
